@@ -33,6 +33,7 @@ let player = {
 	},
 	status:
 	{
+		atack: false,
 		right: false,
 		left: false,
 		jump: false,
@@ -85,12 +86,25 @@ let player = {
 		}
 	},
 	shells: [],
+	animation:
+	{
+		direction:
+		{
+			right: true,
+			left: false
+		}
+	}
 
 	processing()
 	{
-		checkCollision(),
-		changeStatus(),
-		doStap(),
+		checkCollision();
+		setMousData();
+		changeStatus();
+		doStap();
+		doJump();
+		doFlip();
+		doGravity();
+		doJerk();
 	},
 
 	checkCollision()
