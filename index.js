@@ -15,10 +15,10 @@ let Player = {
 	{
 		power:
 		{
-			jump: 50,
+			jump: 30,
 			gravity: 4,
-			jerk: 55,
-			flip: 50
+			jerk: 50,
+			flip: 30
 		},
 		progression:
 		{
@@ -56,9 +56,9 @@ let Player = {
 	{
 		run: 8,
 		gravity: 4,
-		jump: 50,
-		jerk: 55,
-		flip: 50
+		jump: 30,
+		jerk: 50,
+		flip: 30
 	},
 	reload:
 	{
@@ -92,12 +92,10 @@ let Player = {
 	shells: [],
 	animation:
 	{
-		current: 'stop',
-		direction:
-		{
-			right: true,
-			left: false
-		}
+		current: 'flip',
+		iterationTime: 300,
+		stap: 1,
+		direction: 'right'
 	},
 
 	processing()
@@ -133,18 +131,71 @@ let Player = {
 				//
 			}
 		},
-		stap:
+		run:
 		{
 			start(player)
 			{
-				player.status.stap = true;
+				if(!player.status.jump && !player.status.flip && !player.status.jerk && !player.status.gravity && player.animation.current != 'run')
+					player.listener.run.animation.start(player);
+
+				player.animation.direction = player.status.right?'right':'left';
 			},
 			make(player)
 			{
 			},
 			end(player)
 			{
-				player.status.stap = false;
+				player.listener.standing.start(player);
+			},
+			animation:
+			{
+				start(player)
+				{
+					player.animation.current = 'run';
+					player.animation.stap = 1;
+					player.animation.iterationTime = '300';
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
+			}
+		},
+		standing:
+		{
+			start(player)
+			{
+				player.status.standing = true;
+
+				if(!player.status.jump && !player.status.flep && !player.status.jerk && !player.status.gravity)
+					player.listener.standing.animation.start(player);
+			},
+			make(player)
+			{
+			},
+			end(player)
+			{
+				player.status.standing = false;
+			},
+			animation:
+			{
+				start(player)
+				{
+					player.animation.current = 'standing'; 
+					player.animation.iterationTime = '500';
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
 			}
 		},
 		jump:
@@ -170,6 +221,21 @@ let Player = {
 			{
 				player.status.jump = false;
 				player.speeds.jump = player.constants.power.jump;
+			},
+			animation:
+			{
+				start(player)
+				{
+					//
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
 			}
 		},
 		flip:
@@ -195,6 +261,21 @@ let Player = {
 			{
 				player.status.flip = false;
 				player.speeds.flip = player.constants.power.flip;
+			},
+			animation:
+			{
+				start(player)
+				{
+					//
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
 			}
 		},
 		jerk:
@@ -232,6 +313,21 @@ let Player = {
 				setTimeout(()=>{
 					player.reload.jerk = true;
 				},time);
+			},
+			animation:
+			{
+				start(player)
+				{
+					//
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
 			}
 		},
 		gravity:
@@ -253,6 +349,21 @@ let Player = {
 			{
 				player.status.gravity = false;
 				player.speeds.gravity = player.constants.power.gravity;
+			},
+			animation:
+			{
+				start(player)
+				{
+					//
+				},
+				make(player)
+				{
+					//
+				},
+				end(player)
+				{
+					//
+				}
 			}
 		},
 		collision:
@@ -295,7 +406,6 @@ let Player = {
 					player.collision.down = true;
 
 					player.listener.gravity.end(player);
-					// player.listener.jerk.end(player);
 
 					player.reload.jump = true;
 					player.reload.flip = false
@@ -306,20 +416,6 @@ let Player = {
 				}
 			}
 		}
-	},
-
-	getVector(x,y)
-	{
-		let vx = x - this.x,
-			vy = y - this.y,
-			result = {};
-
-		let dist = Math.sqrt(vx * vx + vy * vy);
-
-		result.dx = vx / dist;
-		result.dy = vy / dist;
-
-		return result;
 	},
 
 	changeStatus()
@@ -395,6 +491,11 @@ let Player = {
 
 			if(e == 'keyup')
 				player.status.left = false;
+
+			if(!player.status.right && !player.status.left)
+				player.listener.run.end(player);
+			else
+				player.listener.run.start(player);
 		},
 		right(player,e)
 		{
@@ -403,6 +504,11 @@ let Player = {
 
 			if(e == 'keyup')
 				player.status.right = false;
+
+			if(!player.status.right && !player.status.left)
+				player.listener.run.end(player);
+			else
+				player.listener.run.start(player);
 		},
 		up(player)
 		{
@@ -418,7 +524,7 @@ let Player = {
 		{
 			if(player.reload.jerk)
 			{
-				player.directions.jerk.vector = player.getVector(player.mouse.x, player.mouse.y);
+				player.directions.jerk.vector = Support.getVector(player.x, player.y, player.mouse.x, player.mouse.y);
 				player.listener.jerk.start(player);
 			}
 		},
@@ -461,15 +567,116 @@ document.addEventListener('mousedown', (e)=> {
 });
 
 
-const player = new Image()
-player.src = 'img/sp/platform.png'
 
-setInterval((e)=>{ctx.clearRect(0, 0, canv.width, canv.height); ctx.drawImage(player, Player.x, Player.y); Player.processing();}, 20)
+const Support = {
+	getVector(x1,y1,x2,y2)
+	{
+		let vx = x2 - x1,
+			vy = y2 - y1,
+			result = {}
+
+		let dist = Math.sqrt(vx * vx + vy * vy);
+
+		result.dx = vx / dist;
+		result.dy = vy / dist;
+
+		return result;
+	},
+	setImage(src)
+	{
+		let img = new Image();
+		img.src = src;
+		return img;
+	}
+}
 
 
 
 
 
+let Images = 
+{
+	standing:
+	{
+		right:
+		[
+			Support.setImage('img/stopR/1.png'),
+			Support.setImage('img/stopR/2.png')
+		],
+		left:
+		[
+			Support.setImage('img/stopL/1.png'),
+			Support.setImage('img/stopL/2.png')
+		]
+	},
+	run:
+	{
+		right:
+		[
+			Support.setImage('img/runR/1.png'),
+			Support.setImage('img/runR/2.png')
+		],
+		left:
+		[
+			Support.setImage('img/runL/1.png'),
+			Support.setImage('img/runL/2.png')
+		]
+	},
+	jump:
+	{
+		right:
+		[
+			Support.setImage('img/runR/1.png')
+		],
+		left:
+		[
+			Support.setImage('img/runL/1.png')
+		]
+	},
+	jerk:
+	{
+		right:
+		[
+			Support.setImage('img/at/right.png')
+		],
+		left:
+		[
+			Support.setImage('img/at/left.png')
+		]
+	},
+	gravity:
+	{
+		right:
+		[
+			Support.setImage('img/runR/2.png')
+		],
+		left:
+		[
+			Support.setImage('img/runL/2.png')
+		]
+	},
+	flip:
+	{
+		right:
+		[
+			Support.setImage('img/flipR/1.png'),
+			Support.setImage('img/flipR/2.png'),
+			Support.setImage('img/flipR/3.png'),
+			Support.setImage('img/flipR/4.png'),
+			Support.setImage('img/flipR/5.png'),
+			Support.setImage('img/flipR/6.png')
+		],
+		left:
+		[
+			Support.setImage('img/flipL/1.png'),
+			Support.setImage('img/flipL/2.png'),
+			Support.setImage('img/flipL/3.png'),
+			Support.setImage('img/flipL/4.png'),
+			Support.setImage('img/flipL/5.png'),
+			Support.setImage('img/flipL/6.png')
+		]
+	}
+}
 
 
 let Animation = {
@@ -480,11 +687,44 @@ let Animation = {
 	{
 		//
 	},
+	processing()
+	{
+		this.clearPlayerCanvas();
+		this.rendering();
+	},
+	changesFrames(player)
+	{
+		player.listener[player.animation.current].animation.make();
+
+		if(player.animation.stap < Images[player.animation.current][player.animation.direction].length)
+			player.animation.stap += 1;
+		else
+			player.animation.stap = 1;
+
+		setTimeout(()=>{
+			Animation.changesFrames(player);
+		},player.animation.iterationTime);
+	},
 	rendering()
 	{
-		//
+		ctx.drawImage(Images[Player.animation.current][Player.animation.direction][Player.animation.stap-1], Player.x, Player.y);
+	},
+	clearPlayerCanvas()
+	{
+		ctx.clearRect(0, 0, canv.width, canv.height);
 	}
 }
+Animation.changesFrames(Player);
+setInterval((e)=>{ Player.processing(); Animation.processing()}, 20)
+
+
+
+
+
+
+
+
+
 
 let Field = {
 	cell:
