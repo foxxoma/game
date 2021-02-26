@@ -10,6 +10,7 @@ document.oncontextmenu = ()=> {return false;}
 let Player = {
 	y: canv.height/2,
 	x: canv.width/2,
+	size: 60,
 	constants:
 	{
 		power:
@@ -105,8 +106,8 @@ let Player = {
 
 	checkCollision()
 	{
-		if(this.y + 60 >= 700 && !this.status.jump)
-			this.listener.collision.down.start(this, {x:0,y:640});
+		if(this.y + this.size >= 600 && this.y <= 600 + Field.cell.size && !this.status.jump && this.x > 300 && this.x < 600)
+			this.listener.collision.down.start(this, {x:0,y:600 - this.size});
 		else
 			this.listener.collision.down.end(this);
 	},
