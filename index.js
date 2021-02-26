@@ -49,9 +49,9 @@ let Player = {
 	{
 		run: 2,
 		gravity: 4,
-		jump: 30,
+		jump: 50,
 		jerk: 70,
-		flip: 30
+		flip: 50
 	},
 	reload:
 	{
@@ -148,9 +148,12 @@ let Player = {
 				player.reload.flip = true;
 			},
 			make(player)
-			{		
+			{	
+				if(!player.reload.flip)
+					player.reload.flip = true;
+
 				if(player.speeds.jump < 2)
-					player.status.jump = false;
+					player.listener.jump.end(player);
 			},
 			end(player)
 			{
@@ -176,7 +179,7 @@ let Player = {
 			make(player)
 			{
 				if(player.speeds.flip < 2)
-					player.status.flip = false;
+					player.listener.flip.end(player);
 			},
 			end(player)
 			{
@@ -203,7 +206,7 @@ let Player = {
 			make(player)
 			{
 				if(player.speeds.jerk < 2)
-					player.status.jerk = false;
+					player.listener.jerk.end(player);
 			},
 			end(player)
 			{
