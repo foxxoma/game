@@ -1,20 +1,20 @@
-const canv = document.getElementById('canv'),
+const canv = document.getElementById('players'),
 ctx = canv.getContext('2d');	
 
-canv.width = 3200;
-canv.height = 1216;
+canv.width = 800;
+canv.height = 500;
 
-document.body.style.overflow = 'hidden';
+
 document.oncontextmenu = ()=> {return false;}
 
-let player = {
+let Player = {
 	y: canv.height/2,
 	x: canv.width/2,
 	constants:
 	{
 		power:
 		{
-			jump: 30,
+			jump: 60,
 			gravity: 10,
 			jerk: 70,
 			flip: 30
@@ -48,10 +48,10 @@ let player = {
 	speeds:
 	{
 		run: 2,
-		gravity: this.constants.power.gravity,
-		jump: this.constants.power.jump,
-		jerk: this.constants.power.jerk,
-		flip: this.constants.power.flip
+		gravity: 10,
+		jump: 30,
+		jerk: 70,
+		flip: 30
 	},
 	reload:
 	{
@@ -89,30 +89,34 @@ let player = {
 	shells: [],
 	animation:
 	{
+		current: 'stop',
 		direction:
 		{
 			right: true,
 			left: false
 		}
-	}
+	},
 
 	processing()
 	{
-		checkCollision();
-		setMousData();
-		setPower();
-		changeStatus();
-		doStap();
-		doJump();
-		doFlip();
-		doGravity();
-		doJerk();
+		this.checkCollision();
+		this.setMousData();
+		this.changeStatus();
+		this.doStap();
+		this.doJump();
+		this.doFlip();
+		this.doGravity();
+		this.doJerk();
 	},
 
 	checkCollision()
 	{
-		//
+		if(this.y + 60 >= 500 && !this.status.jump)
+			this.listener.collision.down.start(this, {x:0,y:440});
+		else
+			this.listener.collision.down.end(this);
 	},
+
 	listener:
 	{
 		stap:
@@ -224,6 +228,7 @@ let player = {
 			end(player)
 			{
 				player.status.gravity = false;
+				player.speeds.gravity = player.constants.power.gravity;
 			}
 		},
 		collision:
@@ -260,8 +265,9 @@ let player = {
 			},
 			down:
 			{
-				start(player)
+				start(player, object)
 				{
+					player.y = object.y;
 					player.collision.down = true;
 
 					player.listener.gravity.end(player);
@@ -302,7 +308,7 @@ let player = {
 		this.listener.jump.make(this);
 
 		this.speeds.jump *= this.constants.progression.jump;
-		this.y += this.speeds.jump;
+		this.y -= this.speeds.jump;
 	},
 
 	doFlip()
@@ -313,7 +319,7 @@ let player = {
 		this.listener.flip.make(this);
 
 		this.speeds.flip *= this.constants.progression.flip;
-		this.y += this.speeds.flip;
+		this.y -= this.speeds.flip;
 	},
 
 	doJerk()
@@ -335,7 +341,7 @@ let player = {
 			return;
 
 		this.speeds.gravity /= this.constants.progression.gravity;
-		this.y -= this.speeds.gravity;
+		this.y += this.speeds.gravity;
 	},
 
 	setMousData()
@@ -353,7 +359,51 @@ let player = {
 	{
 		//
 	}
+}
 
+
+
+
+
+
+
+const player = new Image()
+player.src = 'img/sp/platform.png'
+
+setInterval((e)=>{ ctx.clearRect(0, 0, canv.width, canv.height); ctx.drawImage(player, Player.x, Player.y); Player.processing();}, 60)
+
+
+
+
+
+
+
+let Animation = {
+	fps: 60,
+	player: {},
+	field: {},
+	init()
+	{
+		//
+	},
+	rendering()
+	{
+		//
+	}
+}
+
+let Field = {
+	cell:
+	{
+		size: 60,
+	},
+	cellidth: 1000,
+	height: 500,
+	coordinates: [],
+	init()
+	{
+		//
+	}
 }
 
 document.oncontextmenu = ()=>{return false}
