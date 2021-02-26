@@ -115,6 +115,20 @@ let player = {
 	},
 	listener:
 	{
+		stap:
+		{
+			start()
+			{
+				this.status.stap = true;
+			},
+			make()
+			{
+			},
+			end()
+			{
+				this.status.stap = false;
+			}
+		},
 		jump:
 		{
 			start()
@@ -134,7 +148,7 @@ let player = {
 			},
 			end()
 			{
-				this.status.jump = true;
+				this.status.jump = false;
 				this.speeds.jump = this.constants.power.jump;
 			}
 
@@ -196,7 +210,7 @@ let player = {
 
 				this.listener.jump.end();
 
-				this.reload.flip = true;
+				this.reload.jump = false;
 			},
 			make()
 			{
