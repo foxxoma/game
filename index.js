@@ -117,144 +117,162 @@ let player = {
 	{
 		stap:
 		{
-			start()
+			start(player)
 			{
-				this.status.stap = true;
+				player.status.stap = true;
 			},
-			make()
+			make(player)
 			{
 			},
-			end()
+			end(player)
 			{
-				this.status.stap = false;
+				player.status.stap = false;
 			}
 		},
 		jump:
 		{
-			start()
+			start(player)
 			{
-				if(!this.reload.jump)
+				if(!player.reload.jump)
 					return;
 
-				this.status.jump = true;
+				player.status.jump = true;
 
-				this.listener.gravity.end();
+				player.listener.gravity.end(player);
 
-				this.reload.jump = false;
-				this.reload.flip = true;
+				player.reload.jump = false;
+				player.reload.flip = true;
 			},
-			make()
+			make(player)
 			{		
-				if(this.speeds.jump < 1)
-					this.status.jump = false;
+				if(player.speeds.jump < 1)
+					player.status.jump = false;
 			},
-			end()
+			end(player)
 			{
-				this.status.jump = false;
-				this.speeds.jump = this.constants.power.jump;
+				player.status.jump = false;
+				player.speeds.jump = player.constants.power.jump;
 			}
 
 		},
 		flip:
 		{
-			start()
+			start(player)
 			{
-				if(!this.reload.flip)
+				if(!player.reload.flip)
 					return;
 
-				this.status.flip = true;
+				player.status.flip = true;
 
-				this.listener.gravity.end();
-				this.listener.jump.end();
+				player.listener.gravity.end(player);
+				player.listener.jump.end(player);
 
-				this.reload.flip = false;
+				player.reload.flip = false;
 			},
-			make()
+			make(player)
 			{
-				if(this.speeds.flip < 1)
-					this.status.flip = false;
+				if(player.speeds.flip < 1)
+					player.status.flip = false;
 			},
-			end()
+			end(player)
 			{
-				this.status.flip = false;
-				this.speeds.flip = this.constants.power.flip;
+				player.status.flip = false;
+				player.speeds.flip = player.constants.power.flip;
 			}
 		},
 		jerk:
 		{
-			start()
+			start(player)
 			{
-				if(!this.reload.jerk)
+				if(!player.reload.jerk)
 					return;
 
-				this.status.jerk = true;
+				player.status.jerk = true;
 
-				this.listener.gravity.end();
-				this.listener.jump.end();
+				player.listener.gravity.end(player);
+				player.listener.jump.end(player);
 
-				this.reload.jump = false;
-				this.reload.jerk = false;
-				this.reload.flip = true;
+				player.reload.jump = false;
+				player.reload.jerk = false;
+				player.reload.flip = true;
 			},
-			make()
+			make(player)
 			{
-				if(this.speeds.jerk < 1)
-					this.status.jerk = false;
+				if(player.speeds.jerk < 1)
+					player.status.jerk = false;
 			},
-			end()
+			end(player)
 			{
-				this.status.jerk = false;
-				this.speeds.jerk = this.constants.power.jerk;
+				player.status.jerk = false;
+				player.speeds.jerk = player.constants.power.jerk;
 			}
 
 		},
 		gravity:
 		{
-			start()
+			start(player)
 			{
-				this.status.gravity = true;
+				player.status.gravity = true;
 
-				this.listener.jump.end();
+				player.listener.jump.end(player);
 
-				this.reload.jump = false;
+				player.reload.jump = false;
 			},
-			make()
+			make(player)
 			{
 			},
-			end()
+			end(player)
 			{
-				this.status.gravity = false;
+				player.status.gravity = false;
 			}
 		},
 		collision:
 		{
-			up()
+			up:
 			{
-				if(this.status.jump)
+				start(player)
 				{
-					this.listener.jump.end();
+					player.collision.up = true;
 
-					this.reload.jump = false;
-				}
-				if(this.status.jerk)
+					if(player.status.jump)
+					{
+						player.listener.jump.end(player);
+
+						player.reload.jump = false;
+					}
+					if(player.status.jerk)
+					{
+						player.listener.jerk.end(player);
+
+						player.reload.jerk = false;
+					}
+					if(player.status.flip)
+					{
+						player.listener.flip.end(player);
+
+						player.reload.flip = false;
+					}
+				},
+				end(player)
 				{
-					this.listener.jerk.end();
-
-					this.reload.jerk = false;
-				}
-				if(this.status.flip)
-				{
-					this.listener.flip.end();
-
-					this.reload.flip = false;
-				}
+					player.collision.up = false;
+				}	
 			},
-			down()
+			down:
 			{
-				this.listener.gravity.end();
+				start(player)
+				{
+					player.collision.down = true;
 
-				this.reload.jump = true;
-				this.reload.flip = false;
+					player.listener.gravity.end(player);
+
+					player.reload.jump = true;
+					player.reload.flip = false;
+				},
+				end(player)
+				{
+					player.collision.down = false;
+				}
 			}
 		}
 	},
@@ -262,7 +280,7 @@ let player = {
 	changeStatus()
 	{
 		if(!this.status.jump && !this.collision.down && !this.status.jerk && !this.status.flip)
-			this.listener.gravity.start();
+			this.listener.gravity.start(this);
 	},
 
 	doStap()
@@ -281,7 +299,7 @@ let player = {
 		if(!this.status.jump)
 			return;
 
-		this.listener.jump.make();
+		this.listener.jump.make(this);
 
 		this.speeds.jump *= this.constants.progression.jump;
 		this.y += this.speeds.jump;
@@ -292,7 +310,7 @@ let player = {
 		if(!this.status.flip)
 			return;
 
-		this.listener.flip.make();
+		this.listener.flip.make(this);
 
 		this.speeds.flip *= this.constants.progression.flip;
 		this.y += this.speeds.flip;
@@ -303,7 +321,7 @@ let player = {
 		if(!this.status.jerk)
 			return;
 
-		this.listener.jerk.make();
+		this.listener.jerk.make(this);
 
 		this.speeds.jerk *= this.constants.progression.jerk;
 
