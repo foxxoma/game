@@ -1,10 +1,11 @@
 const canv = document.getElementById('canv'),
-ctx = canv.getContext('2d');
+ctx = canv.getContext('2d');	
 
 canv.width = 3200;
 canv.height = 1216;
 
 document.body.style.overflow = 'hidden';
+document.oncontextmenu = ()=> {return false;}
 
 let player = {
 	y: canv.height/2,
@@ -99,6 +100,7 @@ let player = {
 	{
 		checkCollision();
 		setMousData();
+		setPower();
 		changeStatus();
 		doStap();
 		doJump();
@@ -111,79 +113,136 @@ let player = {
 	{
 		//
 	},
-
-	changeStatus()
+	listener:
 	{
-		if(!this.status.jump)
-			this.speeds.jump = this.constants.power.jump;
-
-		if(!this.status.flip)
-			this.speeds.flip = this.constants.power.flip;
-
-		if(!this.status.jerk)
-			this.speeds.jerk = this.constants.power.jerk;
-
-
-		if(this.status.jump)
+		jump:
 		{
-			this.status.gravity = false;
-			this.reload.jump = false;
-			this.reload.flip = true;
-		}
-
-		if(this.status.flip)
-		{
-			this.status.gravity = false;
-			this.status.jump = false;
-			this.reload.flip = false;
-		}
-
-		if(this.status.jerk)
-		{
-			this.status.gravity = false;
-			this.status.jump = false;
-			this.reload.jump = false;
-			this.reload.jerk = false;
-			this.reload.flip = true;
-		}
-
-
-		if(this.collision.up)
-		{
-			if(this.status.jump)
+			start()
 			{
-				this.status.jump = false;
+				if(!this.reload.jump)
+					return;
+
+				this.status.jump = true;
+
+				this.listener.gravity.end();
+
 				this.reload.jump = false;
-			}
-			if(this.status.jerk)
+				this.reload.flip = true;
+			},
+			make()
 			{
-				this.status.jerk = false;
-				this.reload.jerk = false;
+			},
+			end()
+			{
+				this.status.jump = true;
+				this.speeds.jump = this.constants.power.jump;
 			}
-			if(this.status.flip)
+
+		},
+		flip:
+		{
+			start()
+			{
+				if(!this.reload.flip)
+					return;
+
+				this.status.flip = true;
+
+				this.listener.gravity.end();
+				this.listener.jump.end();
+
+				this.reload.flip = false;
+			},
+			make()
+			{
+			},
+			end()
 			{
 				this.status.flip = false;
+				this.speeds.flip = this.constants.power.flip;
+			}
+		},
+		jerk:
+		{
+			start()
+			{
+				if(!this.reload.jerk)
+					return;
+
+				this.status.jerk = true;
+
+				this.listener.gravity.end();
+				this.listener.jump.end();
+
+				this.reload.jump = false;
+				this.reload.jerk = false;
+				this.reload.flip = true;
+			},
+			make()
+			{
+			},
+			end()
+			{
+				this.status.jerk = false;
+				this.speeds.jerk = this.constants.power.jerk;
+			}
+
+		},
+		gravity:
+		{
+			start()
+			{
+				this.status.gravity = true;
+
+				this.listener.jump.end();
+
+				this.reload.flip = true;
+			},
+			make()
+			{
+			},
+			end()
+			{
+				this.status.gravity = false;
+			}
+		},
+		collision:
+		{
+			up()
+			{
+				if(this.status.jump)
+				{
+					this.listener.jump.end();
+
+					this.reload.jump = false;
+				}
+				if(this.status.jerk)
+				{
+					this.listener.jerk.end();
+
+					this.reload.jerk = false;
+				}
+				if(this.status.flip)
+				{
+					this.listener.flip.end();
+
+					this.reload.flip = false;
+				}
+			},
+			down()
+			{
+				this.listener.gravity.end();
+
+				this.reload.jump = true;
 				this.reload.flip = false;
 			}
 		}
+	},
 
-		//gravity, jump, flip
-		if(this.collision.down)
-		{
-			this.status.gravity = false;
-			this.reload.jump = true;
-			this.reload.flip = false;
-		}
-
-		//gravity, jump, down, jerk, flip
+	changeStatus()
+	{
 		if(!this.status.jump && !this.collision.down && !this.status.jerk && !this.status.flip)
-			this.status.gravity = true;
-
-		if(this.status.gravity)
-		{
-			this.reload.jump = false;
-			this.reload.flip = true;
-		}
+			this.listener.gravity.start();
 	},
 
 	doStap()
@@ -239,7 +298,7 @@ let player = {
 
 		this.mous.vector.dx = vx / dist;
 		this.mous.vector.dy = vy / dist;
-	}
+	},
 
 	doJerk()
 	{
@@ -262,18 +321,4 @@ let player = {
 
 }
 
-const knifes = []
-
-const start = ()=>{
-	fieldStart();
-}
-
-
-start()
-
-let animation = setInterval(stopR, 300);
-
-
 document.oncontextmenu = ()=>{return false}
-
-
