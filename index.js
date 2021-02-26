@@ -26,6 +26,13 @@ let Player = {
 			gravity: 0.9,
 			jerk: 0.97,
 			flip: 0.9
+		},
+		finishSpeed:
+		{
+			jump: 2,
+			gravity: 55,
+			jerk: 40,
+			flip: 2
 		}
 	},
 	life:
@@ -156,7 +163,7 @@ let Player = {
 			},
 			make(player)
 			{	
-				if(player.speeds.jump < 2)
+				if(player.speeds.jump < player.constants.finishSpeed.jump)
 					player.listener.jump.end(player);
 			},
 			end(player)
@@ -181,7 +188,7 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.flip < 2)
+				if(player.speeds.flip < player.constants.finishSpeed.flip)
 					player.listener.flip.end(player);
 			},
 			end(player)
@@ -208,7 +215,7 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.jerk < 40)
+				if(player.speeds.jerk < player.constants.finishSpeed.jerk)
 					player.listener.jerk.end(player);
 
 				player.reload.jump = false;
@@ -226,7 +233,6 @@ let Player = {
 					player.reload.jerk = true;
 				},time);
 			}
-
 		},
 		gravity:
 		{
@@ -240,7 +246,7 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.gravity >= 55)
+				if(player.speeds.gravity >= player.constants.finishSpeed.gravity)
 					player.speeds.gravity = 55;
 			},
 			end(player)
