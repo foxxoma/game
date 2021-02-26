@@ -144,7 +144,9 @@ let player = {
 				this.reload.flip = true;
 			},
 			make()
-			{
+			{		
+				if(this.speeds.jump < 1)
+					this.status.jump = false;
 			},
 			end()
 			{
@@ -169,6 +171,8 @@ let player = {
 			},
 			make()
 			{
+				if(this.speeds.flip < 1)
+					this.status.flip = false;
 			},
 			end()
 			{
@@ -194,6 +198,8 @@ let player = {
 			},
 			make()
 			{
+				if(this.speeds.jerk < 1)
+					this.status.jerk = false;
 			},
 			end()
 			{
@@ -275,11 +281,10 @@ let player = {
 		if(!this.status.jump)
 			return;
 
+		this.listener.jump.make();
+
 		this.speeds.jump *= this.constants.progression.jump;
 		this.y += this.speeds.jump;
-
-		if(this.speeds.jump < 1)
-			this.status.jump = false;
 	},
 
 	doFlip()
@@ -287,11 +292,23 @@ let player = {
 		if(!this.status.flip)
 			return;
 
+		this.listener.flip.make();
+
 		this.speeds.flip *= this.constants.progression.flip;
 		this.y += this.speeds.flip;
+	},
 
-		if(this.speeds.flip < 1)
-			this.status.flip = false;
+	doJerk()
+	{
+		if(!this.status.jerk)
+			return;
+
+		this.listener.jerk.make();
+
+		this.speeds.jerk *= this.constants.progression.jerk;
+
+		this.x += this.speeds.jerk * this.directions.jerk.vector.dx;
+		this.y += this.speeds.jerk * this.directions.jerk.vector.dy;
 	},
 
 	doGravity()
@@ -314,23 +331,9 @@ let player = {
 		this.mous.vector.dy = vy / dist;
 	},
 
-	doJerk()
-	{
-		if(!this.status.jerk)
-			return;
-
-		this.speeds.jerk *= this.constants.progression.jerk;
-
-		this.x += this.speeds.jerk * this.directions.jerk.vector.dx;
-		this.y += this.speeds.jerk * this.directions.jerk.vector.dy;
-
-		if(this.speeds.jerk < 1)
-			this.status.jerk = false;
-	},
-
 	onClick(key)
 	{
-
+		//
 	}
 
 }
