@@ -14,17 +14,17 @@ let Player = {
 	{
 		power:
 		{
-			jump: 60,
-			gravity: 10,
+			jump: 50,
+			gravity: 4,
 			jerk: 70,
-			flip: 30
+			flip: 50
 		},
 		progression:
 		{
-			jump: 0.8,
-			gravity: 0.8,
+			jump: 0.9,
+			gravity: 0.9,
 			jerk: 0.9,
-			flip: 0.8
+			flip: 0.9
 		}
 	},
 	life:
@@ -48,7 +48,7 @@ let Player = {
 	speeds:
 	{
 		run: 2,
-		gravity: 10,
+		gravity: 4,
 		jump: 30,
 		jerk: 70,
 		flip: 30
@@ -111,7 +111,7 @@ let Player = {
 
 	checkCollision()
 	{
-		if(this.y + 60 >= 500 && !this.status.jump)
+		if(this.y + 60 >= 500)
 			this.listener.collision.down.start(this, {x:0,y:440});
 		else
 			this.listener.collision.down.end(this);
@@ -149,7 +149,7 @@ let Player = {
 			},
 			make(player)
 			{		
-				if(player.speeds.jump < 1)
+				if(player.speeds.jump < 2)
 					player.status.jump = false;
 			},
 			end(player)
@@ -175,7 +175,7 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.flip < 1)
+				if(player.speeds.flip < 2)
 					player.status.flip = false;
 			},
 			end(player)
@@ -202,7 +202,7 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.jerk < 1)
+				if(player.speeds.jerk < 2)
 					player.status.jerk = false;
 			},
 			end(player)
@@ -224,6 +224,8 @@ let Player = {
 			},
 			make(player)
 			{
+				if(this.speeds.gravity >= 55)
+					this.speeds.gravity = 55;
 			},
 			end(player)
 			{
@@ -271,6 +273,7 @@ let Player = {
 					player.collision.down = true;
 
 					player.listener.gravity.end(player);
+					player.listener.jerk.end(player);
 
 					player.reload.jump = true;
 					player.reload.flip = false;
@@ -370,7 +373,7 @@ let Player = {
 const player = new Image()
 player.src = 'img/sp/platform.png'
 
-setInterval((e)=>{ ctx.clearRect(0, 0, canv.width, canv.height); ctx.drawImage(player, Player.x, Player.y); Player.processing();}, 60)
+setInterval((e)=>{ctx.clearRect(0, 0, canv.width, canv.height); ctx.drawImage(player, Player.x, Player.y); Player.processing();}, 20)
 
 
 
