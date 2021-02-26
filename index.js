@@ -1,8 +1,8 @@
 const canv = document.getElementById('players'),
 ctx = canv.getContext('2d');	
 
-canv.width = 800;
-canv.height = 500;
+canv.width = 1000;
+canv.height = 700;
 
 
 document.oncontextmenu = ()=> {return false;}
@@ -16,14 +16,14 @@ let Player = {
 		{
 			jump: 50,
 			gravity: 4,
-			jerk: 70,
+			jerk: 55,
 			flip: 50
 		},
 		progression:
 		{
 			jump: 0.9,
 			gravity: 0.9,
-			jerk: 0.9,
+			jerk: 0.97,
 			flip: 0.9
 		}
 	},
@@ -34,7 +34,6 @@ let Player = {
 	},
 	status:
 	{
-		atack: false,
 		right: false,
 		left: false,
 		jump: false,
@@ -47,10 +46,10 @@ let Player = {
 	},
 	speeds:
 	{
-		run: 2,
+		run: 8,
 		gravity: 4,
 		jump: 50,
-		jerk: 70,
+		jerk: 55,
 		flip: 50
 	},
 	reload:
@@ -67,13 +66,9 @@ let Player = {
 		left: false,
 		right: false
 	},
-	mous: 
+	mouse: 
 	{
-		x:0, y:0,
-		vector:
-		{
-			dx:0, dy:0
-		}
+		x:0, y:0
 	},
 	directions:
 	{
@@ -100,7 +95,6 @@ let Player = {
 	processing()
 	{
 		this.checkCollision();
-		this.setMousData();
 		this.changeStatus();
 		this.doStap();
 		this.doJump();
@@ -111,14 +105,26 @@ let Player = {
 
 	checkCollision()
 	{
-		if(this.y + 60 >= 500)
-			this.listener.collision.down.start(this, {x:0,y:440});
+		if(this.y + 60 >= 700 && !this.status.jump)
+			this.listener.collision.down.start(this, {x:0,y:640});
 		else
 			this.listener.collision.down.end(this);
 	},
 
 	listener:
 	{
+		mouse:
+		{
+			move(player, e)
+			{
+				player.mouse.x = e.pageX;
+				player.mouse.y = e.pageY;
+			},
+			click(player, e)
+			{
+				//
+			}
+		},
 		stap:
 		{
 			start(player)
@@ -149,9 +155,6 @@ let Player = {
 			},
 			make(player)
 			{	
-				if(!player.reload.flip)
-					player.reload.flip = true;
-
 				if(player.speeds.jump < 2)
 					player.listener.jump.end(player);
 			},
@@ -160,7 +163,6 @@ let Player = {
 				player.status.jump = false;
 				player.speeds.jump = player.constants.power.jump;
 			}
-
 		},
 		flip:
 		{
@@ -205,13 +207,23 @@ let Player = {
 			},
 			make(player)
 			{
-				if(player.speeds.jerk < 2)
+				if(player.speeds.jerk < 40)
 					player.listener.jerk.end(player);
+
+				player.reload.jump = false;
+				player.reload.flip = true;
 			},
 			end(player)
 			{
 				player.status.jerk = false;
 				player.speeds.jerk = player.constants.power.jerk;
+				player.listener.jerk.load(player, 2000);
+			},
+			load(player, time)
+			{	
+				setTimeout(()=>{
+					player.reload.jerk = true;
+				},time);
 			}
 
 		},
@@ -227,8 +239,8 @@ let Player = {
 			},
 			make(player)
 			{
-				if(this.speeds.gravity >= 55)
-					this.speeds.gravity = 55;
+				if(player.speeds.gravity >= 55)
+					player.speeds.gravity = 55;
 			},
 			end(player)
 			{
@@ -276,10 +288,10 @@ let Player = {
 					player.collision.down = true;
 
 					player.listener.gravity.end(player);
-					player.listener.jerk.end(player);
+					// player.listener.jerk.end(player);
 
 					player.reload.jump = true;
-					player.reload.flip = false;
+					player.reload.flip = false
 				},
 				end(player)
 				{
@@ -287,6 +299,20 @@ let Player = {
 				}
 			}
 		}
+	},
+
+	getVector(x,y)
+	{
+		let vx = x - this.x,
+			vy = y - this.y,
+			result = {};
+
+		let dist = Math.sqrt(vx * vx + vy * vy);
+
+		result.dx = vx / dist;
+		result.dy = vy / dist;
+
+		return result;
 	},
 
 	changeStatus()
@@ -311,10 +337,11 @@ let Player = {
 		if(!this.status.jump)
 			return;
 
-		this.listener.jump.make(this);
-
 		this.speeds.jump *= this.constants.progression.jump;
+
 		this.y -= this.speeds.jump;
+
+		this.listener.jump.make(this);
 	},
 
 	doFlip()
@@ -322,10 +349,10 @@ let Player = {
 		if(!this.status.flip)
 			return;
 
-		this.listener.flip.make(this);
-
 		this.speeds.flip *= this.constants.progression.flip;
 		this.y -= this.speeds.flip;
+
+		this.listener.flip.make(this);
 	},
 
 	doJerk()
@@ -333,12 +360,12 @@ let Player = {
 		if(!this.status.jerk)
 			return;
 
-		this.listener.jerk.make(this);
-
 		this.speeds.jerk *= this.constants.progression.jerk;
 
 		this.x += this.speeds.jerk * this.directions.jerk.vector.dx;
 		this.y += this.speeds.jerk * this.directions.jerk.vector.dy;
+
+		this.listener.jerk.make(this);
 	},
 
 	doGravity()
@@ -348,29 +375,83 @@ let Player = {
 
 		this.speeds.gravity /= this.constants.progression.gravity;
 		this.y += this.speeds.gravity;
+
+		this.listener.gravity.make(this);
 	},
 
-	setMousData()
+	onClick:
 	{
-		let vx = this.mous.x - this.x,
-			vy = this.mous.y - this.y
+		left(player, e)
+		{
+			if(e == 'keydown')
+				player.status.left = true;
 
-		let dist = Math.sqrt(vx * vx + vy * vy);
+			if(e == 'keyup')
+				player.status.left = false;
+		},
+		right(player,e)
+		{
+			if(e == 'keydown')
+				player.status.right = true;
 
-		this.mous.vector.dx = vx / dist;
-		this.mous.vector.dy = vy / dist;
-	},
-
-	onClick(key)
-	{
-		//
+			if(e == 'keyup')
+				player.status.right = false;
+		},
+		up(player)
+		{
+			if(player.reload.jump)
+				player.listener.jump.start(player);
+			else
+			{
+				if(player.reload.flip)
+					player.listener.flip.start(player);
+			}
+		},
+		jerk(player)
+		{
+			if(player.reload.jerk)
+			{
+				player.directions.jerk.vector = player.getVector(player.mouse.x, player.mouse.y);
+				player.listener.jerk.start(player);
+			}
+		},
+		shells()
+		{
+			//
+		}
 	}
 }
 
 
+document.addEventListener('keydown', (e)=> {
+	if(e.code == 'KeyA')
+		Player.onClick.left(Player,'keydown');
 
+	if(e.code == 'KeyD')
+		Player.onClick.right(Player,'keydown');
 
+	if(e.code == 'KeyW')
+		Player.onClick.up(Player);
 
+	if(e.code == 'KeyE')
+		Player.onClick.jerk(Player);
+});
+
+document.addEventListener('keyup', (e)=> {
+	if(e.code == 'KeyA')
+		Player.onClick.left(Player,'keyup');
+
+	if(e.code == 'KeyD')
+		Player.onClick.right(Player,'keyup');
+});
+
+document.addEventListener('mousemove',(e)=>{
+	Player.listener.mouse.move(Player, e);
+});
+
+document.addEventListener('mousedown', (e)=> {
+	Player.listener.mouse.click(Player, e);
+});
 
 
 const player = new Image()
