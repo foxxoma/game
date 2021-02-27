@@ -42,6 +42,7 @@ let Player = {
 	},
 	status:
 	{
+		run: false,
 		right: false,
 		left: false,
 		jump: false,
@@ -101,7 +102,7 @@ let Player = {
 	processing()
 	{
 		this.checkCollision();
-		this.changeStatus();
+		this.checkStatus();
 		this.doStap();
 		this.doJump();
 		this.doFlip();
@@ -135,8 +136,7 @@ let Player = {
 		{
 			start(player)
 			{
-				if(!player.status.jump && !player.status.flip && !player.status.jerk && !player.status.gravity && player.animation.current != 'run')
-					player.listener.run.animation.start(player);
+				player.status.run = true;
 
 				player.animation.direction = player.status.right?'right':'left';
 			},
@@ -145,7 +145,7 @@ let Player = {
 			},
 			end(player)
 			{
-				player.listener.standing.start(player);
+				player.status.run = false;
 			},
 			animation:
 			{
@@ -170,9 +170,6 @@ let Player = {
 			start(player)
 			{
 				player.status.standing = true;
-
-				if(!player.status.jump && !player.status.flep && !player.status.jerk && !player.status.gravity)
-					player.listener.standing.animation.start(player);
 			},
 			make(player)
 			{
@@ -185,7 +182,8 @@ let Player = {
 			{
 				start(player)
 				{
-					player.animation.current = 'standing'; 
+					player.animation.current = 'standing';
+					player.animation.stap = 1;
 					player.animation.iterationTime = '500';
 				},
 				make(player)
@@ -418,10 +416,27 @@ let Player = {
 		}
 	},
 
-	changeStatus()
+	checkStatus()
 	{
 		if(!this.status.jump && !this.collision.down && !this.status.jerk && !this.status.flip)
 			this.listener.gravity.start(this);
+
+		if(!this.status.jump && !this.status.flep && !this.status.jerk && !this.status.gravity)
+		{
+			if(this.status.run)
+			{
+				if(this.animation.current != 'run')
+					this.listener.run.animation.start(this);
+			}
+			else
+			{
+				this.listener.standing.start(this);
+
+				if(this.animation.current != 'standing')
+					this.listener.standing.animation.start(this);
+			}
+
+		}
 	},
 
 	doStap()
