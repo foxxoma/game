@@ -138,7 +138,8 @@ let Player = {
 			{
 				player.status.run = true;
 
-				player.animation.direction = player.status.right?'right':'left';
+				if(!player.status.jerk)
+					player.animation.direction = player.status.right?'right':'left';
 			},
 			make(player)
 			{
@@ -181,7 +182,7 @@ let Player = {
 			animation:
 			{
 				start(player)
-				{
+				{	
 					player.animation.current = 'standing';
 					player.animation.stap = 1;
 					player.animation.iterationTime = '500';
@@ -209,6 +210,8 @@ let Player = {
 
 				player.reload.jump = false;
 				player.reload.flip = true;
+
+				player.listener.jump.animation.start(player);
 			},
 			make(player)
 			{	
@@ -223,8 +226,10 @@ let Player = {
 			animation:
 			{
 				start(player)
-				{
-					//
+				{	
+					player.animation.current = 'jump';
+					player.animation.stap = 1;
+					player.animation.iterationTime = '200';
 				},
 				make(player)
 				{
@@ -249,6 +254,8 @@ let Player = {
 				player.listener.jump.end(player);
 
 				player.reload.flip = false;
+
+				player.listener.flip.animation.start(player);
 			},
 			make(player)
 			{
@@ -264,11 +271,14 @@ let Player = {
 			{
 				start(player)
 				{
-					//
+					player.animation.current = 'flip';
+					player.animation.stap = 1;
+					player.animation.iterationTime = '70';
 				},
 				make(player)
 				{
-					//
+					if(player.animation.stap == Images[player.animation.current][player.animation.direction].length)
+						player.listener.jump.animation.start(player);
 				},
 				end(player)
 				{
@@ -291,9 +301,14 @@ let Player = {
 				player.reload.jump = false;
 				player.reload.jerk = false;
 				player.reload.flip = true;
+
+				player.animation.direction = player.directions.jerk.vector.dx > 0?'right':'left';
 			},
 			make(player)
 			{
+				if(player.speeds.jerk < player.constants.finishSpeed.jerk + 2)
+					player.listener.jerk.animation.start(player);
+
 				if(player.speeds.jerk < player.constants.finishSpeed.jerk)
 					player.listener.jerk.end(player);
 
@@ -302,6 +317,7 @@ let Player = {
 			},
 			end(player)
 			{
+				player.listener.jerk.animation.start(player);
 				player.status.jerk = false;
 				player.speeds.jerk = player.constants.power.jerk;
 				player.listener.jerk.load(player, 2000);
@@ -316,7 +332,9 @@ let Player = {
 			{
 				start(player)
 				{
-					//
+					player.animation.current = 'jerk';
+					player.animation.stap = 1;
+					player.animation.iterationTime = '300';
 				},
 				make(player)
 				{
@@ -337,6 +355,8 @@ let Player = {
 				player.listener.jump.end(player);
 
 				player.reload.jump = false;
+
+				player.listener.gravity.animation.start(player);
 			},
 			make(player)
 			{
@@ -351,8 +371,10 @@ let Player = {
 			animation:
 			{
 				start(player)
-				{
-					//
+				{	
+					player.animation.current = 'gravity';
+					player.animation.stap = 1;
+					player.animation.iterationTime = '300';
 				},
 				make(player)
 				{
@@ -418,10 +440,10 @@ let Player = {
 
 	checkStatus()
 	{
-		if(!this.status.jump && !this.collision.down && !this.status.jerk && !this.status.flip)
+		if(!this.status.jump && !this.collision.down && !this.status.jerk && !this.status.flip && !this.status.gravity)
 			this.listener.gravity.start(this);
 
-		if(!this.status.jump && !this.status.flep && !this.status.jerk && !this.status.gravity)
+		if(!this.status.jump && !this.status.flip && !this.status.jerk && !this.status.gravity)
 		{
 			if(this.status.run)
 			{
@@ -678,8 +700,7 @@ let Images =
 			Support.setImage('img/flipR/2.png'),
 			Support.setImage('img/flipR/3.png'),
 			Support.setImage('img/flipR/4.png'),
-			Support.setImage('img/flipR/5.png'),
-			Support.setImage('img/flipR/6.png')
+			Support.setImage('img/flipR/5.png')
 		],
 		left:
 		[
@@ -687,8 +708,7 @@ let Images =
 			Support.setImage('img/flipL/2.png'),
 			Support.setImage('img/flipL/3.png'),
 			Support.setImage('img/flipL/4.png'),
-			Support.setImage('img/flipL/5.png'),
-			Support.setImage('img/flipL/6.png')
+			Support.setImage('img/flipL/5.png')
 		]
 	}
 }
@@ -709,14 +729,14 @@ let Animation = {
 	},
 	changesFrames(player)
 	{
-		player.listener[player.animation.current].animation.make();
+		player.listener[player.animation.current].animation.make(player);
 
 		if(player.animation.stap < Images[player.animation.current][player.animation.direction].length)
 			player.animation.stap += 1;
 		else
 			player.animation.stap = 1;
 
-		setTimeout(()=>{
+		this.changesFramesTimeFunction = setTimeout(()=>{
 			Animation.changesFrames(player);
 		},player.animation.iterationTime);
 	},
