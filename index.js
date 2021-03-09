@@ -116,6 +116,11 @@ let Player = {
 			this.listener.collision.down.start(this, {x:0,y:600 - this.size});
 		else
 			this.listener.collision.down.end(this);
+
+		if(this.y < 300 + Field.cell.size && this.y > 300  && this.x > 300 && this.x < 600)
+			this.listener.collision.up.start(this, {x:0,y:300 + Field.cell.size});
+		else
+			this.listener.collision.up.end(this);
 	},
 
 	listener:
@@ -154,7 +159,7 @@ let Player = {
 				{
 					player.animation.current = 'run';
 					player.animation.stap = 1;
-					player.animation.iterationTime = '300';
+					player.animation.iterationTime = '200';
 				},
 				make(player)
 				{
@@ -390,8 +395,10 @@ let Player = {
 		{
 			up:
 			{
-				start(player)
+				start(player, object)
 				{
+					player.y = object.y;
+					
 					player.collision.up = true;
 
 					if(player.status.jump)
@@ -767,7 +774,7 @@ let Field = {
 		size: 60,
 	},
 	cellidth: 1000,
-	height: 500,
+	height: 700,
 	coordinates: [],
 	init()
 	{
