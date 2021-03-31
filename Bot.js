@@ -1,8 +1,8 @@
-let Player = [{
-	y: canv.height/2,
-	x: canv.width/2,
+let Bot = [{
+	y: canv.height/(Math.random() * (10 - 1) + 1),
+	x: canv.width/(Math.random() * (10 - 1) + 1),
 	size: 64,
-	sizeCollision: 62,
+	sizeCollision: 64,
 	constants:
 	{
 		power:
@@ -47,7 +47,7 @@ let Player = [{
 	},
 	speeds:
 	{
-		run: 8,
+		run: 6,
 		gravity: 4,
 		jump: 30,
 		jerk: 50,
@@ -618,5 +618,6 @@ let Player = [{
 		this.y += this.speeds.gravity;
 
 		this.listener.gravity.make(this);
-	}
+	},
 }];
+
