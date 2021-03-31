@@ -28,36 +28,37 @@ bush.src = 'img/sp/bush.png'
 const playerImg = new Image()
 
 
+
 const clear = ()=>{
-    ctx.clearRect(0, 0, canv.width, canv.height)
+	ctx.clearRect(0, 0, canv.width, canv.height)
 }
 
 const fieldDraw = ()=>{
-    for(let y = 0; y< 19; y++){
-        for(let x= 0; x< 50; x++){
-            field[y][x].draw()
-        }
-    }
+	for(let y = 0; y< 19; y++){
+		for(let x= 0; x< 50; x++){
+			field[y][x].draw()
+		}
+	}
 }
 
 const playerDraw = ()=> {
-    ctx.drawImage(playerImg, player.x, player.y)
+	ctx.drawImage(playerImg, player.x, player.y)
 }
 
 const knifeDraw = ()=>{
-    for(let i = 0; i< knifes.length; i++){      
-        ctx.drawImage(bush, knifes[i].x, knifes[i].y)
-    }
+	for(let i = 0; i< knifes.length; i++){      
+		ctx.drawImage(bush, knifes[i].x, knifes[i].y)
+	}
 
 }
 
 setInterval(() => {
-    clear()
+	clear()
 
-    fieldDraw()
-    playerDraw()
-    knifeDraw()
+	fieldDraw()
+	playerDraw()
+	knifeDraw()
 
-    scrollTo(player.x - screen.width/2,player.y - screen.height/2 + 100 )
+	scrollTo(player.x - screen.width/2,player.y - screen.height/2 + 100 )
 }, 12);
 

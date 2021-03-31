@@ -1,16 +1,20 @@
 const canv = document.getElementById('players'),
-ctx = canv.getContext('2d');	
+background = document.getElementById('background'),
+ctxB = background.getContext('2d'),
+ctx = canv.getContext('2d');
 
+background.height = 700;
+background.width = 1000;
 canv.width = 1000;
 canv.height = 700;
-
 
 document.oncontextmenu = ()=> {return false;}
 
 let Player = {
 	y: canv.height/2,
 	x: canv.width/2,
-	size: 60,
+	size: 64,
+	sizeCollision: 62,
 	constants:
 	{
 		power:
@@ -30,7 +34,7 @@ let Player = {
 		finishSpeed:
 		{
 			jump: 2,
-			gravity: 55,
+			gravity: 33,
 			jerk: 40,
 			flip: 2
 		}
@@ -112,15 +116,13 @@ let Player = {
 
 	checkCollision()
 	{
-		if(this.y + this.size >= 600 && this.y <= 600 + Field.cell.size && !this.status.jump && this.x > 300 && this.x < 600)
-			this.listener.collision.down.start(this, {x:0,y:600 - this.size});
-		else
-			this.listener.collision.down.end(this);
+		this.listener.collision.right.check(this);
+		this.listener.collision.left.check(this);
 
-		if(this.y < 300 + Field.cell.size && this.y > 300  && this.x > 300 && this.x < 600)
-			this.listener.collision.up.start(this, {x:0,y:300 + Field.cell.size});
+		if(this.status.jump || this.status.jerk || this.status.flip)
+			this.listener.collision.up.check(this);
 		else
-			this.listener.collision.up.end(this);
+			this.listener.collision.down.check(this);
 	},
 
 	listener:
@@ -366,7 +368,7 @@ let Player = {
 			make(player)
 			{
 				if(player.speeds.gravity >= player.constants.finishSpeed.gravity)
-					player.speeds.gravity = 55;
+					player.speeds.gravity = player.constants.finishSpeed.gravity;
 			},
 			end(player)
 			{
@@ -420,10 +422,94 @@ let Player = {
 						player.reload.flip = false;
 					}
 				},
+				check(player)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(player.y < Field.coordinates[y][x].y + Field.cell.size && player.y > Field.coordinates[y][x].y  && player.x > Field.coordinates[y][x].x - player.sizeCollision && player.x < Field.coordinates[y][x].x + Field.cell.size)
+							{
+								player.listener.collision.up.start(player, {x:0,y:Field.coordinates[y][x].y + Field.cell.size + 5});
+								return true;
+							}
+							else
+								player.listener.collision.up.end(player);
+						}
+					}
+					return false;
+				},
 				end(player)
 				{
 					player.collision.up = false;
 				}	
+			},
+			right:
+			{
+				start(player, object)
+				{
+					player.x = object.x;
+					player.collision.right = true;
+				},
+				check(player)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(Math.abs(Field.coordinates[y][x].x - (player.x + player.sizeCollision)) < 5 && Math.abs(Field.coordinates[y][x].y - player.y) < Field.cell.size - 5)
+							{
+								player.listener.collision.right.start(player, {x:Field.coordinates[y][x].x - player.sizeCollision, y:0});
+								return true;
+							}
+							else
+								player.listener.collision.right.end(player);
+						}
+					}
+					return false;
+				},
+				end(player)
+				{
+					player.collision.right = false;
+				}
+			},
+			left:
+			{
+				start(player, object)
+				{
+					player.x = object.x;
+					player.collision.left = true;
+				},
+				check(player)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(Math.abs((Field.coordinates[y][x].x + player.sizeCollision) - player.x) < 5 && Math.abs(Field.coordinates[y][x].y - player.y) < Field.cell.size - 5)
+							{
+								player.listener.collision.left.start(player, {x:Field.coordinates[y][x].x + Field.cell.size, y:0});
+								return true;
+							}
+							else
+								player.listener.collision.left.end(player);
+						}
+					}
+					return false;
+				},
+				end(player)
+				{
+					player.collision.left = false;
+				}
 			},
 			down:
 			{
@@ -435,7 +521,27 @@ let Player = {
 					player.listener.gravity.end(player);
 
 					player.reload.jump = true;
-					player.reload.flip = false
+					player.reload.flip = false;
+				},
+				check(player)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(player.y + player.sizeCollision >= Field.coordinates[y][x].y && player.y < Field.coordinates[y][x].y + Field.cell.size && !player.status.jump && player.x  > Field.coordinates[y][x].x - player.sizeCollision  && player.x < Field.coordinates[y][x].x + Field.cell.size)
+							{
+								player.listener.collision.down.start(player, {x:0,y: Field.coordinates[y][x].y - player.sizeCollision});
+								return true;
+							}
+							else
+								player.listener.collision.down.end(player);
+						}
+					}
+					return false;
 				},
 				end(player)
 				{
@@ -531,7 +637,10 @@ let Player = {
 		left(player, e)
 		{
 			if(e == 'keydown')
+			{
+				// player.status.right = false;
 				player.status.left = true;
+			}
 
 			if(e == 'keyup')
 				player.status.left = false;
@@ -544,7 +653,10 @@ let Player = {
 		right(player,e)
 		{
 			if(e == 'keydown')
+			{
+				// player.status.left = false;
 				player.status.right = true;
+			}
 
 			if(e == 'keyup')
 				player.status.right = false;
@@ -720,6 +832,23 @@ let Images =
 	}
 }
 
+let fieldImg = 
+{
+	platform1: Support.setImage('img/sp/platform-left.png'),
+	platform2: Support.setImage('img/sp/platform.png'),
+	platform3: Support.setImage('img/sp/platform-right.png'),
+	platform4: Support.setImage('img/sp/platform-up.png'),
+	platform5: Support.setImage('img/sp/platform-wall-left-down.png'),
+	platform6: Support.setImage('img/sp/platform-wall-right-down.png'),
+	platform7: Support.setImage('img/sp/platform-wall-left-up.png'),
+	platform8: Support.setImage('img/sp/platform-wall-right-up.png'),
+	platform9: Support.setImage('img/sp/platform-wall.png'),
+	bg: Support.setImage('img/bg.png'),
+	tree: Support.setImage('img/sp/tree.png'),
+	pine: Support.setImage('img/sp/pine.png'),
+	bush: Support.setImage('img/sp/bush.png'),
+}
+
 
 let Animation = {
 	fps: 60,
@@ -757,29 +886,55 @@ let Animation = {
 	}
 }
 Animation.changesFrames(Player);
-setInterval((e)=>{ Player.processing(); Animation.processing()}, 20)
-
-
-
-
-
-
-
 
 
 
 let Field = {
 	cell:
 	{
-		size: 60,
+		size: 64,
 	},
 	cellidth: 1000,
 	height: 700,
 	coordinates: [],
 	init()
 	{
-		//
+		this.fieldStart();
+		background.height = 19* this.cell.size;
+		background.width = 50* this.cell.size;
+		canv.width = 50* this.cell.size;
+		canv.height = 19* this.cell.size;
+	},
+	fieldStart()
+	{
+		for(let y = 0; y< 19; y++)
+		{
+			this.coordinates[y] = []
+			for(let x= 0; x< 50; x++)
+			{
+				this.coordinates[y][x] = new FIELD(y,x)
+				this.coordinates[y][x].num = 0;
+			}
+		}
+		this.fieldCreate();
+	},
+	fieldCreate()
+	{
+		fieldCreate();
+		setTimeout(function() {Field.drawField();}, 500);
+	},
+	drawField()
+	{
+		for(let y = 0; y< 19; y++)
+		{
+			for(let x= 0; x< 50; x++)
+			{
+				this.coordinates[y][x].draw();
+			}
+		}
 	}
 }
 
+Field.init();
+setInterval((e)=>{ Player.processing(); Animation.processing()}, 20)
 document.oncontextmenu = ()=>{return false}
