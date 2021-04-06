@@ -264,6 +264,8 @@ let Bot = [{
 			},
 			end(player)
 			{
+				player.finishCollision.up = player.y;
+
 				player.status.flip = false;
 				player.speeds.flip = player.constants.power.flip;
 			},
@@ -588,7 +590,17 @@ let Bot = [{
 
 		this.speeds.jump *= this.constants.progression.jump;
 
-		this.y -= this.speeds.jump;
+		for (let i = 1; i < this.speeds.jump; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+			else
+			{
+				return;
+			}
+		}
 
 		this.listener.jump.make(this);
 	},
@@ -599,7 +611,18 @@ let Bot = [{
 			return;
 
 		this.speeds.flip *= this.constants.progression.flip;
-		this.y -= this.speeds.flip;
+		
+		for (let i = 1; i < this.speeds.flip; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+			else
+			{
+				return;
+			}
+		}
 
 		this.listener.flip.make(this);
 	},
@@ -894,6 +917,8 @@ let Bot = [{
 			},
 			end(player)
 			{
+				player.finishCollision.up = player.y;
+				
 				player.status.flip = false;
 				player.speeds.flip = player.constants.power.flip;
 			},
@@ -1218,7 +1243,18 @@ let Bot = [{
 
 		this.speeds.jump *= this.constants.progression.jump;
 
-		this.y -= this.speeds.jump;
+		for (let i = 1; i < this.speeds.jump; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+			else
+			{
+				return;
+			}
+		}
+		
 
 		this.listener.jump.make(this);
 	},
@@ -1229,7 +1265,18 @@ let Bot = [{
 			return;
 
 		this.speeds.flip *= this.constants.progression.flip;
-		this.y -= this.speeds.flip;
+		
+		for (let i = 1; i < this.speeds.flip; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+			else
+			{
+				return;
+			}
+		}
 
 		this.listener.flip.make(this);
 	},

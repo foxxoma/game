@@ -108,7 +108,11 @@ let Player = [{
 		this.listener.collision.left.check(this);
 
 		if(this.status.jump || this.status.jerk || this.status.flip)
+		{
 			this.listener.collision.up.check(this);
+			if(this.status.jerk && this.directions.jerk.vector.dy > 0.3)
+				this.listener.collision.down.check(this);
+		}
 		else
 			this.listener.collision.down.check(this);
 	},
@@ -505,6 +509,13 @@ let Player = [{
 				{
 					player.y = object.y;
 					player.collision.down = true;
+					
+					if(player.status.jerk)
+					{
+						player.listener.jerk.end(player);
+
+						player.reload.jerk = false;
+					}
 
 					player.listener.gravity.end(player);
 
@@ -580,7 +591,13 @@ let Player = [{
 
 		this.speeds.jump *= this.constants.progression.jump;
 
-		this.y -= this.speeds.jump;
+		for (let i = 1; i < this.speeds.jump; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+		}
 
 		this.listener.jump.make(this);
 	},
@@ -591,7 +608,18 @@ let Player = [{
 			return;
 
 		this.speeds.flip *= this.constants.progression.flip;
-		this.y -= this.speeds.flip;
+		
+		for (let i = 1; i < this.speeds.flip; i++)
+		{
+			if(!this.listener.collision.up.check(this))
+			{
+				this.y -= 1;
+			}
+			else
+			{
+				return;
+			}
+		}
 
 		this.listener.flip.make(this);
 	},

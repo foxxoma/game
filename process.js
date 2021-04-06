@@ -6,24 +6,24 @@ function Follow(bot)
 		for(key in Player)
 			if(Math.abs(Player[key].x - Bot[keyBot].x) < key)
 				key = Math.abs(Player[key].x - Bot[keyBot].x);
-		if((Player[key].y < Bot[keyBot].y - Player[key].size || Bot[keyBot].collision.right || Bot[keyBot].collision.left) && !Bot[keyBot].status.jump)
+		if((Player[key].y < (Bot[keyBot].y - Player[key].size) || (Bot[keyBot].collision.right && Player[key].x > Bot[keyBot].x && Math.abs(Player[key].x - Bot[keyBot].x) > 8) || (Bot[keyBot].collision.left && Player[key].x < Bot[keyBot].x && Math.abs(Player[key].x - Bot[keyBot].x) > 8)) && !Bot[keyBot].status.jump)
 		{
 			OnClick.up(Bot[keyBot]);
 		}
-		else if(Player[key].y < Bot[keyBot].y - Player[key].size && Bot[keyBot].status.gravity && !Bot[keyBot].finishCollision.up)
+		else if(Player[key].y < Bot[keyBot].y - Player[key].size && Bot[keyBot].status.gravity && Bot[keyBot].finishCollision.up < (Bot[keyBot].y - Bot[keyBot].size/2))
 		{
 			OnClick.up(Bot[keyBot]);
 		}
 
 		if(Bot[keyBot].finishCollision.up)
 		{
-			if((Bot[keyBot].finishCollision.up - Field.cell.size) > Bot[keyBot].y || Player[key].y >= Bot[keyBot].y)
+			if((Bot[keyBot].finishCollision.up - Field.cell.size) > Bot[keyBot].y || Player[key].y >= Bot[keyBot].y || Bot[keyBot].collision.left)
 			{
 				Bot[keyBot].finishCollision.up = false;
 			}
-			else if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
+			if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
 			{
-				if(Support.random(2,1) > 1,5)
+				if(Bot[keyBot].x > Player[key].x)
 				{
 					OnClick.left(Bot[keyBot], 'keydown');
 					OnClick.right(Bot[keyBot], 'keyup');
@@ -37,13 +37,13 @@ function Follow(bot)
 		}
 		else if(Bot[keyBot].finishCollision.down && Bot[keyBot].y < (Player[key].y - Player[key].size))
 		{
-			if((Bot[keyBot].finishCollision.down + Bot[keyBot].size) < Bot[keyBot].y || Player[key].y <= Bot[keyBot].y)
+			if((Bot[keyBot].finishCollision.down + Bot[keyBot].size) < Bot[keyBot].y || Player[key].y <= Bot[keyBot].y || Bot[keyBot].collision.left)
 			{
 				Bot[keyBot].finishCollision.down = false;
 			}
-			else if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
+			if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
 			{
-				if(Support.random(2,1) > 1,5)
+				if(Bot[keyBot].x > Player[key].x)
 				{
 					OnClick.left(Bot[keyBot], 'keydown');
 					OnClick.right(Bot[keyBot], 'keyup');
