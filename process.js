@@ -1,23 +1,61 @@
 function Follow(bot)
 {
-	
 	for(keyBot in Bot)
 	{
 		let key = 0;
 		for(key in Player)
 			if(Math.abs(Player[key].x - Bot[keyBot].x) < key)
 				key = Math.abs(Player[key].x - Bot[keyBot].x);
-
-		if((Player[key].y < Bot[keyBot].y || Bot[keyBot].collision.right || Bot[keyBot].collision.left) && !Bot[keyBot].status.jump)
+		if((Player[key].y < Bot[keyBot].y - Player[key].size || Bot[keyBot].collision.right || Bot[keyBot].collision.left) && !Bot[keyBot].status.jump)
 		{
 			OnClick.up(Bot[keyBot]);
 		}
-		else if(Player[key].y < Bot[keyBot].y && Bot[keyBot].status.gravity)
+		else if(Player[key].y < Bot[keyBot].y - Player[key].size && Bot[keyBot].status.gravity && !Bot[keyBot].finishCollision.up)
 		{
 			OnClick.up(Bot[keyBot]);
 		}
 
-		if(Math.abs(Player[key].x - Bot[keyBot].x) < 8)
+		if(Bot[keyBot].finishCollision.up)
+		{
+			if((Bot[keyBot].finishCollision.up - Field.cell.size) > Bot[keyBot].y || Player[key].y >= Bot[keyBot].y)
+			{
+				Bot[keyBot].finishCollision.up = false;
+			}
+			else if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
+			{
+				if(Support.random(2,1) > 1,5)
+				{
+					OnClick.left(Bot[keyBot], 'keydown');
+					OnClick.right(Bot[keyBot], 'keyup');
+				}
+				else
+				{
+					OnClick.left(Bot[keyBot], 'keyup');
+					OnClick.right(Bot[keyBot], 'keydown');
+				}
+			}
+		}
+		else if(Bot[keyBot].finishCollision.down && Bot[keyBot].y < (Player[key].y - Player[key].size))
+		{
+			if((Bot[keyBot].finishCollision.down + Bot[keyBot].size) < Bot[keyBot].y || Player[key].y <= Bot[keyBot].y)
+			{
+				Bot[keyBot].finishCollision.down = false;
+			}
+			else if(!Bot[keyBot].status.right && !Bot[keyBot].status.left)
+			{
+				if(Support.random(2,1) > 1,5)
+				{
+					OnClick.left(Bot[keyBot], 'keydown');
+					OnClick.right(Bot[keyBot], 'keyup');
+				}
+				else
+				{
+					OnClick.left(Bot[keyBot], 'keyup');
+					OnClick.right(Bot[keyBot], 'keydown');
+				}
+			}
+		}	
+		else if(Math.abs(Player[key].x - Bot[keyBot].x) < 8)
 		{
 			OnClick.right(Bot[keyBot], 'keyup');
 			OnClick.left(Bot[keyBot], 'keyup');
@@ -86,6 +124,10 @@ const Support = {
 		let img = new Image();
 		img.src = src;
 		return img;
+	},
+	random(max, min)
+	{
+		return Math.random() * (max - min) + min;
 	}
 }
 
@@ -245,8 +287,7 @@ setInterval((e)=>{
 	for(key in Bot)
 		Bot[key].processing();
 
-	for(key in Bot)
-		Follow(Bot[key])
+	Follow(Bot)
 
 	Animation.processing();
 }, 20);
