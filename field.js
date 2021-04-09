@@ -12,42 +12,42 @@ class FIELD {
 	}
 	draw(){
 		if(this.num === 1){
-			ctxB.drawImage(fieldImg.platform1, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform1, this.x, this.y)
 		}
 		if(this.num === 2){
-			ctxB.drawImage(fieldImg.platform2, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform2, this.x, this.y)
 		}
 		if(this.num === 3){
-			ctxB.drawImage(fieldImg.platform3, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform3, this.x, this.y)
 		}
 		if(this.num === 4){
-			ctxB.drawImage(fieldImg.platform4, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform4, this.x, this.y)
 		}
 		if(this.num === 5){
-			ctxB.drawImage(fieldImg.platform5, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform5, this.x, this.y)
 		}
 		if(this.num === 6){
-			ctxB.drawImage(fieldImg.platform6, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform6, this.x, this.y)
 		}
 		if(this.num === 7){
-			ctxB.drawImage(fieldImg.platform7, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform7, this.x, this.y)
 		}
 		if(this.num === 8){
-			ctxB.drawImage(fieldImg.platform8, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform8, this.x, this.y)
 		}
 		if(this.num === 9){
-			ctxB.drawImage(fieldImg.platform9, this.x, this.y)
+			ctxB.drawImage(FieldImg.platform9, this.x, this.y)
 		}
 		
 
 		if(this.tree){
-			ctxB.drawImage(fieldImg.tree, this.x, this.y-256)
+			ctxB.drawImage(FieldImg.tree, this.x, this.y-256)
 		}
 		if(this.pine){
-			ctxB.drawImage(fieldImg.pine, this.x, this.y-256)
+			ctxB.drawImage(FieldImg.pine, this.x, this.y-256)
 		}
 		if(this.bush){
-			ctxB.drawImage(fieldImg.bush, this.x, this.y-64)
+			ctxB.drawImage(FieldImg.bush, this.x, this.y-64)
 		}
 	}
 }

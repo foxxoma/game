@@ -10,6 +10,32 @@ canv.height = 700;
 
 document.oncontextmenu = ()=> {return false;}
 
+const Support = {
+	getVector(x1,y1,x2,y2)
+	{
+		let vx = x2 - x1,
+			vy = y2 - y1,
+			result = {}
+
+		let dist = Math.sqrt(vx * vx + vy * vy);
+
+		result.dx = vx / dist;
+		result.dy = vy / dist;
+
+		return result;
+	},
+	setImage(src)
+	{
+		let img = new Image();
+		img.src = src;
+		return img;
+	},
+	random(max, min)
+	{
+		return Math.random() * (max - min) + min;
+	}
+}
+
 let Field = {
 	cell:
 	{
@@ -21,17 +47,17 @@ let Field = {
 	init()
 	{
 		this.fieldStart();
-		background.height = 19* this.cell.size;
-		background.width = 50* this.cell.size;
-		canv.width = 50* this.cell.size;
-		canv.height = 19* this.cell.size;
+		background.height = 19 * this.cell.size;
+		background.width = 50 * this.cell.size;
+		canv.width = 50 * this.cell.size;
+		canv.height = 19 * this.cell.size;
 	},
 	fieldStart()
 	{
-		for(let y = 0; y< 19; y++)
+		for(let y = 0; y < 19; y++)
 		{
 			this.coordinates[y] = []
-			for(let x= 0; x< 50; x++)
+			for(let x = 0; x < 50; x++)
 			{
 				this.coordinates[y][x] = new FIELD(y,x)
 				this.coordinates[y][x].num = 0;
@@ -46,9 +72,9 @@ let Field = {
 	},
 	drawField()
 	{
-		for(let y = 0; y< 19; y++)
+		for(let y = 0; y < 19; y++)
 		{
-			for(let x= 0; x< 50; x++)
+			for(let x = 0; x < 50; x++)
 			{
 				this.coordinates[y][x].draw();
 			}
@@ -70,9 +96,9 @@ let OnClick = {
 			player.status.left = false;
 
 		if(!player.status.right && !player.status.left)
-			player.listener.run.end(player);
+			Listener.run.end(player);
 		else
-			player.listener.run.start(player);
+			Listener.run.start(player);
 	},
 	right(player,e)
 	{
@@ -85,18 +111,18 @@ let OnClick = {
 			player.status.right = false;
 
 		if(!player.status.right && !player.status.left)
-			player.listener.run.end(player);
+			Listener.run.end(player);
 		else
-			player.listener.run.start(player);
+			Listener.run.start(player);
 	},
 	up(player)
 	{
 		if(player.reload.jump)
-			player.listener.jump.start(player);
+			Listener.jump.start(player);
 		else
 		{
 			if(player.reload.flip)
-				player.listener.flip.start(player);
+				Listener.flip.start(player);
 		}
 	},
 	jerk(player)
@@ -104,7 +130,7 @@ let OnClick = {
 		if(player.reload.jerk)
 		{
 			player.directions.jerk.vector = Support.getVector(player.x, player.y, player.mouse.x, player.mouse.y);
-			player.listener.jerk.start(player);
+			Listener.jerk.start(player);
 		}
 	},
 	shells()
