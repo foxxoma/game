@@ -53,7 +53,7 @@ function Follow(bot)
 					OnClick.right(Bot[keyBot], 'keydown');
 				}
 			}
-		}	
+		}
 		else if(Math.abs(Player[key].x - Bot[keyBot].x) < 8)
 		{
 			OnClick.right(Bot[keyBot], 'keyup');
@@ -69,7 +69,7 @@ function Follow(bot)
 			OnClick.right(Bot[keyBot], 'keyup');
 			OnClick.left(Bot[keyBot], 'keydown');
 		}
-	}	
+	}
 }
 
 document.addEventListener('keydown', (e)=> {
@@ -84,6 +84,9 @@ document.addEventListener('keydown', (e)=> {
 
 	if(e.code == 'KeyE')
 		OnClick.jerk(Player[0]);
+
+	if(e.code == 'KeyQ')
+		OnClick.shells(Player[0]);
 });
 
 document.addEventListener('keyup', (e)=> {

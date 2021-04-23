@@ -57,7 +57,8 @@ let Player = {
 			gravity: 4,
 			jump: 30,
 			jerk: 50,
-			flip: 30
+			flip: 30,
+			shell: 27
 		},
 		reload:
 		{
@@ -73,20 +74,25 @@ let Player = {
 			left: false,
 			right: false
 		},
-		mouse: 
+		mouse:
 		{
 			x:0, y:0
 		},
 		directions:
 		{
 			jerk:
-			{ 
+			{
 				x:0, y:0,
 				vector:
 				{
 					dx:0, dy:0
 				}
 			}
+		},
+		shellSize:
+		{
+			h: 15,
+			w: 30
 		},
 		shells: [],
 		animation:

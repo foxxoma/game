@@ -61,7 +61,7 @@ const Listener = {
 		animation:
 		{
 			start(player)
-			{	
+			{
 				player.animation.current = 'standing';
 				player.animation.stap = 1;
 				player.animation.iterationTime = '500';
@@ -93,7 +93,7 @@ const Listener = {
 			Listener.jump.animation.start(player);
 		},
 		make(player)
-		{	
+		{
 			if(player.speeds.jump < player.constants.finishSpeed.jump)
 				Listener.jump.end(player);
 		},
@@ -105,7 +105,7 @@ const Listener = {
 		animation:
 		{
 			start(player)
-			{	
+			{
 				player.animation.current = 'jump';
 				player.animation.stap = 1;
 				player.animation.iterationTime = '200';
@@ -202,8 +202,8 @@ const Listener = {
 			Listener.jerk.load(player, 2000);
 		},
 		load(player, time)
-		{	
-			setTimeout(()=>{
+		{
+			setTimeout(()=> {
 				player.reload.jerk = true;
 			},time);
 		},
@@ -222,6 +222,161 @@ const Listener = {
 			end(player)
 			{
 				//
+			}
+		}
+	},
+	shells:
+	{
+		start(player)
+		{
+			player.reload.shells = false;
+
+			setTimeout(() =>
+			{
+				player.reload.shells = true;
+			}
+			,1000);
+
+			const shell = {};
+
+			shell.stop = false;
+
+			shell.x = player.x;
+			shell.y = player.y;
+
+			shell.vector = Support.getVector(player.x, player.y, player.mouse.x, player.mouse.y);
+
+			player.shells.push(shell);
+		},
+		make(player)
+		{
+			//
+		},
+		end(player)
+		{
+			//
+		},
+		collision:
+		{
+			up:
+			{
+				start(shell, object)
+				{
+					console.log('u');
+					// shell.y = object.y;
+					shell.stop = true;
+				},
+				check(player, shell)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(shell.y < (Field.coordinates[y][x].y + Field.cell.size) && shell.y > Field.coordinates[y][x].y  && shell.x > (Field.coordinates[y][x].x - player.shellSize.w) && shell.x < (Field.coordinates[y][x].x + Field.cell.size))
+							{
+								Listener.shells.collision.up.start(shell, {x:0, y:Field.coordinates[y][x].y + Field.cell.size});
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			},
+			right:
+			{
+				start(shell, object)
+				{
+					console.log('r');
+					// shell.x = object.x;
+					shell.stop = true;
+				},
+				check(player, shell)
+				{
+					if (Math.abs(canv.width - (shell.x + player.shellSize.w)) < 5)
+					{
+						Listener.shells.collision.right.start(shell, {x:canv.width - player.shellSize.w, y:0});
+						return true;
+					}
+
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(Math.abs(Field.coordinates[y][x].x - (shell.x + player.shellSize.x)) < 5 && Math.abs(Field.coordinates[y][x].y - shell.y) < player.shellSize.h)
+							{
+								Listener.shells.collision.right.start(shell,{x:Field.coordinates[y][x].x, y:0});
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			},
+			left:
+			{
+				start(shell, object)
+				{
+					console.log('l');
+					// shell.x = object.x;
+					shell.stop = true;
+				},
+				check(player, shell)
+				{
+					if (Math.abs(0 - shell.x) < 5)
+					{
+						Listener.shells.collision.left.start(shell, {x:0, y:0});
+						return true;
+					}
+
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if(Math.abs((Field.coordinates[y][x].x + Field.cell.size) - shell.x) < 5 && Math.abs(Field.coordinates[y][x].y - shell.y) < player.shellSize.h)
+							{
+								Listener.shells.collision.left.start(shell,{x:Field.coordinates[y][x].x + Field.cell.size, y:0});
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			},
+			down:
+			{
+				start(shell, object)
+				{
+					console.log('d');
+					// shell.y = object.y;
+					shell.stop = true;
+				},
+				check(player, shell)
+				{
+					for(let y = 0; y< 19; y++)
+					{
+						for(let x= 0; x< 50; x++)
+						{
+							if(!Field.coordinates[y][x].num)
+								continue;
+
+							if((shell.y + player.shellSize.h) >= Field.coordinates[y][x].y && shell.y < (Field.coordinates[y][x].y + Field.cell.size)  && shell.x  > Field.coordinates[y][x].x - player.shellSize.w  && shell.x < Field.coordinates[y][x].x + Field.cell.size)
+							{
+								Listener.shells.collision.down.start(shell,{x:0, y:Field.coordinates[y][x].y});
+								return true;
+							}
+						}
+					}
+					return false;
+				}
 			}
 		}
 	},
@@ -250,7 +405,7 @@ const Listener = {
 		animation:
 		{
 			start(player)
-			{	
+			{
 				player.animation.current = 'gravity';
 				player.animation.stap = 1;
 				player.animation.iterationTime = '300';
@@ -263,7 +418,7 @@ const Listener = {
 			{
 				//
 			}
-		}
+		},
 	},
 	collision:
 	{
@@ -317,7 +472,7 @@ const Listener = {
 			end(player)
 			{
 				player.collision.up = false;
-			}	
+			}
 		},
 		right:
 		{
@@ -335,6 +490,12 @@ const Listener = {
 			},
 			check(player)
 			{
+				if (Math.abs(canv.width - (player.x + player.sizeCollision)) < 5)
+				{
+					Listener.collision.right.start(player, {x:canv.width - player.sizeCollision, y:0});
+					return true;
+				}
+
 				for(let y = 0; y< 19; y++)
 				{
 					for(let x= 0; x< 50; x++)
@@ -374,6 +535,12 @@ const Listener = {
 			},
 			check(player)
 			{
+				if (Math.abs(0 - player.x) < 5)
+				{
+					Listener.collision.left.start(player, {x:0, y:0});
+					return true;
+				}
+
 				for(let y = 0; y< 19; y++)
 				{
 					for(let x= 0; x< 50; x++)
@@ -381,7 +548,7 @@ const Listener = {
 						if(!Field.coordinates[y][x].num)
 							continue;
 
-						if(Math.abs((Field.coordinates[y][x].x + player.sizeCollision) - player.x) < 5 && Math.abs(Field.coordinates[y][x].y - player.y) < Field.cell.size - 5)
+						if(Math.abs((Field.coordinates[y][x].x + player.sizeCollision) - player.x) < 5 && Math.abs(Field.coordinates[y][x].y - player.y) < player.sizeCollision - 5)
 						{
 							Listener.collision.left.start(player, {x:Field.coordinates[y][x].x + Field.cell.size, y:0});
 							return true;
@@ -444,4 +611,4 @@ const Listener = {
 			}
 		}
 	}
-}
+};

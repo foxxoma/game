@@ -10,5 +10,5 @@ setInterval((e)=>{
 	Animation.processing();
 
 	Users[0].scrollToPlayer();
-}, 100);
+}, 20);
 document.oncontextmenu = ()=>{return false}

@@ -1,7 +1,7 @@
 const canv = document.getElementById('players'),
-background = document.getElementById('background'),
-ctxB = background.getContext('2d'),
-ctx = canv.getContext('2d');
+	background = document.getElementById('background'),
+	ctxB = background.getContext('2d'),
+	ctx = canv.getContext('2d');
 
 background.height = 700;
 background.width = 1000;
@@ -15,7 +15,7 @@ const Support = {
 	{
 		let vx = x2 - x1,
 			vy = y2 - y1,
-			result = {}
+			result = {};
 
 		let dist = Math.sqrt(vx * vx + vy * vy);
 
@@ -34,7 +34,7 @@ const Support = {
 	{
 		return Math.random() * (max - min) + min;
 	}
-}
+};
 
 let Field = {
 	cell:
@@ -56,10 +56,10 @@ let Field = {
 	{
 		for(let y = 0; y < 19; y++)
 		{
-			this.coordinates[y] = []
+			this.coordinates[y] = [];
 			for(let x = 0; x < 50; x++)
 			{
-				this.coordinates[y][x] = new FIELD(y,x)
+				this.coordinates[y][x] = new FIELD(y,x);
 				this.coordinates[y][x].num = 0;
 			}
 		}
@@ -80,9 +80,7 @@ let Field = {
 			}
 		}
 	}
-}
-
-Field.init();
+};
 
 let OnClick = {
 	left(player, e)
@@ -133,8 +131,9 @@ let OnClick = {
 			Listener.jerk.start(player);
 		}
 	},
-	shells()
+	shells(player)
 	{
-		//
+		if(player.reload.shells)
+			Listener.shells.start(player);
 	}
-}
+};

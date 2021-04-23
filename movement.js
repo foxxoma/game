@@ -8,10 +8,24 @@ const Movement = {
 		this.doFlip(player);
 		this.doGravity(player);
 		this.doJerk(player);
+		this.doShells(player);
+	},
+
+	checkSahllsCollision(player, shell)
+	{
+		if(Listener.shells.collision.right.check(player, shell))
+			return;
+		if(Listener.shells.collision.left.check(player, shell))
+			return;
+		if(Listener.shells.collision.down.check(player, shell))
+			return;
+		if(Listener.shells.collision.up.check(player, shell))
+			return;
 	},
 
 	checkCollision(player)
 	{
+		
 		Listener.collision.right.check(player);
 		Listener.collision.left.check(player);
 
@@ -71,6 +85,10 @@ const Movement = {
 			{
 				player.y -= 1;
 			}
+			else
+			{
+				return;
+			}
 		}
 
 		Listener.jump.make(player);
@@ -98,6 +116,36 @@ const Movement = {
 		Listener.flip.make(player);
 	},
 
+	doShells(player)
+	{
+		let shells = player.shells;
+
+		if(!shells[0])
+			return;
+
+		for (key in shells)
+		{
+			if(shells[key].stop)
+				continue;
+
+			for (let i = 1; i < player.speeds.shell; i++)
+			{
+				if(shells[key].stop)
+					return;
+
+				this.checkSahllsCollision(player, shells[key]);
+
+				if(shells[key].stop)
+					return;
+
+				shells[key].y += 1 * shells[key].vector.dy;
+				shells[key].x += 1 * shells[key].vector.dx;
+			}
+		}
+
+		Listener.shells.make(player);
+	},
+
 	doJerk(player)
 	{
 		if(!player.status.jerk)
@@ -121,4 +169,4 @@ const Movement = {
 
 		Listener.gravity.make(player);
 	}
-}
+};
