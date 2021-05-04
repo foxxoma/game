@@ -1,48 +1,54 @@
-
-
-class FIELD {
-	constructor(y, x){
+class FIELD
+{
+	constructor(y, x)
+	{
 		this.y = y*64,
 		this.x = x*64,
 		this.tree = false,
 		this.bush = false,
 		this.pine = false,
-		this.contact = false
-
+		this.contact = false,
+		this.generator = false
 	}
-	draw(){
-		if(this.num === 1){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 2){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 3){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 4){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 5){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 6){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 7){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 8){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
-		if(this.num === 9){
-			ctxB.drawImage(FieldImg.super_platform, this.x, this.y)
-		}
+	draw()
+	{
+		if(this.num === 1)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 2)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 3)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 4)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 5)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 6)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 7)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 8)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
+		if(this.num === 9)
+			ctxB.drawImage(FieldImg.super_platform, this.x, this.y);
+		
 		
 
-		// if(this.tree){
-		// 	ctxB.drawImage(FieldImg.tree, this.x, this.y-256)
-		// }
+		if(this.generator)
+			ctxB.drawImage(FieldImg.generator, this.x, this.y-64);
+
+		if(this.decor)
+			ctxB.drawImage(FieldImg.decor, this.x, this.y-64);
+
+		if(this.anten)
+			ctxB.drawImage(FieldImg.anten, this.x, this.y-256);
 		// if(this.pine){
 		// 	ctxB.drawImage(FieldImg.pine, this.x, this.y-256)
 		// }

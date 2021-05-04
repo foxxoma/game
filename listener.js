@@ -45,6 +45,26 @@ const Listener = {
 			}
 		}
 	},
+	dead:
+	{
+		start(player)
+		{
+			player.x = (Math.random() * (canv.width - 100 - 1) + 1);
+			player.y = (Math.random() * (canv.height - 200 - 1) + 1);
+
+			player.hp = 100;
+			player.xp -= 1;
+
+			if(!player.bot)
+				Users[player.id].setXp(player.xp);
+		},
+		xp(player)
+		{
+			player.xp += 1;
+			if(!player.bot)
+				Users[player.id].setXp(player.xp);
+		}
+	},
 	standing:
 	{
 		start(player)
@@ -239,6 +259,8 @@ const Listener = {
 
 			const shell = {};
 
+			shell.id = player.shells.length;
+
 			shell.stop = false;
 
 			shell.x = player.x;
@@ -258,11 +280,54 @@ const Listener = {
 		},
 		collision:
 		{
+			user:
+			{
+				start(user, player, shell, hp)
+				{
+					user.hp -= hp;
+					shell.clear = true;
+
+					if(user.hp <= 0)
+					{
+						Listener.dead.start(user);
+						Listener.dead.xp(player);
+					}
+				},
+				check(player, shell)
+				{
+					if(shell.clear)
+						return false;
+
+					for(key in Bot)
+					{
+						if(player.id == Bot[key].id)
+							continue;
+
+						if((Bot[key].x < (shell.x + player.shellSize.w)) && ((Bot[key].x + Bot[key].sizeCollision - 20) > shell.x) && (Bot[key].y < (shell.y + player.shellSize.h)) && ((Bot[key].y + Bot[key].sizeCollision - 20) > shell.y))
+						{
+							Listener.shells.collision.user.start(Bot[key], player, shell, 50);
+							return true;
+						}
+					}
+					for(key in Player)
+					{
+						if(player.id == Player[key].id)
+							continue;
+						if((Player[key].x < (shell.x + player.shellSize.w)) && ((Player[key].x + Player[key].sizeCollision - 20) > shell.x) && (Player[key].y < (shell.y + player.shellSize.h)) && ((Player[key].y + Player[key].sizeCollision - 20) > shell.y))
+						{
+							Listener.shells.collision.user.start(Player[key], player, shell, 50);
+							return true;
+						}
+					}
+
+					return false;
+					
+				}
+			},
 			up:
 			{
 				start(shell, object)
 				{
-					console.log('u');
 					// shell.y = object.y;
 					shell.stop = true;
 				},
@@ -289,7 +354,6 @@ const Listener = {
 			{
 				start(shell, object)
 				{
-					console.log('r');
 					// shell.x = object.x;
 					shell.stop = true;
 				},
@@ -322,7 +386,6 @@ const Listener = {
 			{
 				start(shell, object)
 				{
-					console.log('l');
 					// shell.x = object.x;
 					shell.stop = true;
 				},
@@ -355,7 +418,6 @@ const Listener = {
 			{
 				start(shell, object)
 				{
-					console.log('d');
 					// shell.y = object.y;
 					shell.stop = true;
 				},
@@ -422,6 +484,21 @@ const Listener = {
 	},
 	collision:
 	{
+		user:
+		{
+			start(bot, player, hp)
+			{
+				player.hp -= hp;
+				if(player.hp <= 0)
+					Listener.dead.start(player);
+			},
+			check(bot)
+			{
+				for(key in Player)
+					if((Player[key].x < (bot.x + bot.sizeCollision - 20)) && ((Player[key].x + Player[key].sizeCollision - 20) > bot.x) && (Player[key].y < (bot.y + bot.sizeCollision - 20)) && ((Player[key].y + Player[key].sizeCollision - 20) > bot.y))
+						Listener.collision.user.start(bot, Player[key], 100);
+			}
+		},
 		up:
 		{
 			start(player, object)

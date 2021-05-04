@@ -1,8 +1,12 @@
 let Bot = {
 	1:{
+		id:1,
 		y: canv.height/(Math.random() * (10 - 1) + 1),
 		x: canv.width/(Math.random() * (10 - 1) + 1),
 		size: 64,
+		bot: 1,
+		hp: 100,
+		xp: 0,
 		sizeCollision: 64,
 		finishCollision:
 		{
@@ -98,9 +102,13 @@ let Bot = {
 		},
 	},
 	2:{
+		id: 2,
 		y: canv.height/(Math.random() * (10 - 1) + 1),
 		x: canv.width/(Math.random() * (10 - 1) + 1),
 		size: 64,
+		bot: 1,
+		hp: 100,
+		xp: 0,
 		sizeCollision: 64,
 		finishCollision:
 		{

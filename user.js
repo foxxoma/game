@@ -8,6 +8,10 @@ Users = {
 				y = player.y + player.size - screen.height/2;
 
 			window.scroll(x,y);
+		},
+		setXp(xp)
+		{
+			document.querySelector('.xp').textContent = 'xp: ' + xp;
 		}
 	}
-}
+};

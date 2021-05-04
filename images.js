@@ -164,6 +164,10 @@ let FieldImg = {
 	tree: Support.setImage('img/sp/tree.png'),
 	pine: Support.setImage('img/sp/pine.png'),
 	bush: Support.setImage('img/sp/bush.png'),
-	super_platform: Support.setImage('img/sp/super_platform.png')
+	super_platform: Support.setImage('img/sp/super_platform.png'),
+	generator: Support.setImage('img/sp/generator.png'),
+	decor:Support.setImage('img/sp/decor.png'),
+	anten:Support.setImage('img/sp/anten.png'),
+	shell:Support.setImage('img/sp/shell.png'),
 };
 Field.init();

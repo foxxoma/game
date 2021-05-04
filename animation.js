@@ -34,7 +34,7 @@ let Animation = {
 			for(shellKey in Player[key].shells)
 			{
 				let shell = Player[key].shells[shellKey];
-				ctx.drawImage(FieldImg.platform1, shell.x, shell.y, 30,15);
+				ctx.drawImage(FieldImg.shell, shell.x, shell.y);
 			}
 		}
 

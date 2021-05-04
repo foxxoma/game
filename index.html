@@ -10,12 +10,14 @@
 	<div class="bg"></div>
 	<canvas id="background"></canvas>
 	<canvas id="players" style="position: absolute; top: 0; left: 0;"></canvas>
+	<div class="xp">xp: 0</div>
 	<script src="field.js"></script>
 	<script src="fieldJ.js"></script>
 	<script src="user.js"></script>
 	<script src="index.js"></script>
 	<script src="listener.js"></script>
 	<script src="movement.js"></script>
+	<script src="Bot_object.js"></script>
 	<script src="Player.js"></script>
 	<script src="Bot.js"></script>
 	<script src="process.js"></script>
@@ -32,6 +34,14 @@
 	body
 	{
 		overflow: hidden;
+	}
+	.xp
+	{
+		position: fixed;
+		top: 0;
+		right: 10px;
+		color: green;
+		font-size: 30px;
 	}
 	.bg
 	{

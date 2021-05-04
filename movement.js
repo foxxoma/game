@@ -14,13 +14,17 @@ const Movement = {
 	checkSahllsCollision(player, shell)
 	{
 		if(Listener.shells.collision.right.check(player, shell))
-			return;
+			return true;
 		if(Listener.shells.collision.left.check(player, shell))
-			return;
+			return true;
 		if(Listener.shells.collision.down.check(player, shell))
-			return;
+			return true;
 		if(Listener.shells.collision.up.check(player, shell))
-			return;
+			return true;
+		if(Listener.shells.collision.user.check(player, shell))
+			return true;
+
+		return false;
 	},
 
 	checkCollision(player)
@@ -36,6 +40,9 @@ const Movement = {
 		}
 		else
 			Listener.collision.down.check(player);
+
+		if(player.bot == 1)
+			Listener.collision.user.check(player);
 	},
 
 	checkStatus(player)
@@ -120,26 +127,32 @@ const Movement = {
 	{
 		let shells = player.shells;
 
-		if(!shells[0])
+		if(shells.length <= 0)
 			return;
 
 		for (key in shells)
 		{
+			shell = shells[key];
 			if(shells[key].stop)
 				continue;
 
 			for (let i = 1; i < player.speeds.shell; i++)
 			{
-				if(shells[key].stop)
+
+				if(this.checkSahllsCollision(player, shell))
 					return;
 
-				this.checkSahllsCollision(player, shells[key]);
+				if(shell.clear)
+				{
+					delete shells[shell.id];
+					return;
+				}
 
-				if(shells[key].stop)
+				if(shell.stop)
 					return;
 
-				shells[key].y += 1 * shells[key].vector.dy;
-				shells[key].x += 1 * shells[key].vector.dx;
+				shell.y += 1 * shell.vector.dy;
+				shell.x += 1 * shell.vector.dx;
 			}
 		}
 

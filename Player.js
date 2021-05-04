@@ -1,7 +1,10 @@
 let Player = {
 	0:{
+		id:0,
 		y: canv.height/2,
 		x: canv.width/2,
+		hp: 100,
+		xp: 0,
 		size: 64,
 		sizeCollision: 62,
 		finishCollision:
@@ -91,8 +94,8 @@ let Player = {
 		},
 		shellSize:
 		{
-			h: 15,
-			w: 30
+			h: 20,
+			w: 20
 		},
 		shells: [],
 		animation:
