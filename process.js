@@ -102,5 +102,6 @@ document.addEventListener('mousemove',(e)=>{
 });
 
 document.addEventListener('mousedown', (e)=> {
+	OnClick.shells(Player[0]);
 	Listener.mouse.click(Player[0], e);
 });
