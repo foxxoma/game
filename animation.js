@@ -19,7 +19,8 @@ let Animation = {
 		else
 			player.animation.stap = 1;
 
-		this.changesFramesTimeFunction = setTimeout(()=> {
+		this.changesFramesTimeFunction = setTimeout(()=>
+		{
 			Animation.changesFrames(player);
 		},player.animation.iterationTime);
 	},
@@ -44,8 +45,3 @@ let Animation = {
 		ctx.clearRect(0, 0, canv.width, canv.height);
 	}
 };
-
-for(key in Player)
-	Animation.changesFrames(Player[key]);
-for(key in Bot)
-	Animation.changesFrames(Bot[key]);

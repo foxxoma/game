@@ -1,14 +1,32 @@
-setInterval((e)=>{
+let frame = null;
+
+function start()
+{
 	for(key in Player)
-		Movement.processing(Player[key]);
+		Animation.changesFrames(Player[key]);
 
 	for(key in Bot)
-		Movement.processing(Bot[key]);
+		Animation.changesFrames(Bot[key]);
 
-	Follow(Bot);
+	let frame = setInterval((e)=>
+	{
+		for(key in Player)
+			Movement.processing(Player[key]);
 
-	Animation.processing();
+		for(key in Bot)
+			Movement.processing(Bot[key]);
 
-	Users[0].scrollToPlayer();
-}, 20);
-document.oncontextmenu = ()=>{return false}
+		Follow(Bot);
+
+		Animation.processing();
+
+		Users[0].scrollToPlayer();
+	}, 20);
+}
+
+start();
+
+document.oncontextmenu = ()=>
+{
+	return false;
+};
