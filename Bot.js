@@ -57,11 +57,12 @@ let Bot = {
 		},
 		speeds:
 		{
-			run: (Math.random() * (7 - 5) + 5),
+			run: 6,
 			gravity: 4,
 			jump: 30,
 			jerk: 50,
-			flip: 30
+			flip: 30,
+			shell: 27,
 		},
 		reload:
 		{
@@ -91,6 +92,11 @@ let Bot = {
 					dx:0, dy:0
 				}
 			}
+		},
+		shellSize:
+		{
+			h: 20,
+			w: 20
 		},
 		shells: [],
 		animation:
@@ -163,7 +169,8 @@ let Bot = {
 			gravity: 4,
 			jump: 30,
 			jerk: 50,
-			flip: 30
+			flip: 30,
+			shell: 27,
 		},
 		reload:
 		{
@@ -179,7 +186,7 @@ let Bot = {
 			left: false,
 			right: false
 		},
-		mouse: 
+		mouse:
 		{
 			x:0, y:0
 		},
@@ -193,6 +200,11 @@ let Bot = {
 					dx:0, dy:0
 				}
 			}
+		},
+		shellSize:
+		{
+			h: 20,
+			w: 20
 		},
 		shells: [],
 		animation:

@@ -138,7 +138,6 @@ const Movement = {
 
 			for (let i = 1; i < player.speeds.shell; i++)
 			{
-
 				if(this.checkSahllsCollision(player, shell))
 					return;
 

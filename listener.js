@@ -49,6 +49,16 @@ const Listener = {
 	{
 		start(player)
 		{
+			if(player.bot)
+			{
+				if((Room.bots - Object.keys(Bot).length) < 2)
+				{
+					delete Bot[player.id];
+					return;
+				}
+				Room.bots--;
+			}
+
 			player.x = (Math.random() * (canv.width - 100 - 1) + 1);
 			player.y = (Math.random() * (canv.height - 200 - 1) + 1);
 
@@ -284,6 +294,9 @@ const Listener = {
 			{
 				start(user, player, shell, hp)
 				{
+					if(player.bot && user.bot)
+						return;
+
 					user.hp -= hp;
 					shell.clear = true;
 
@@ -321,7 +334,6 @@ const Listener = {
 					}
 
 					return false;
-					
 				}
 			},
 			up:
@@ -488,6 +500,9 @@ const Listener = {
 		{
 			start(bot, player, hp)
 			{
+				if(Room.lvl > 1)
+					return;
+
 				player.hp -= hp;
 				if(player.hp <= 0)
 					Listener.dead.start(player);

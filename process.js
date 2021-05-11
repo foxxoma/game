@@ -6,6 +6,16 @@ function Follow(bot)
 		for(key in Player)
 			if(Math.abs(Player[key].x - Bot[keyBot].x) < key)
 				key = Math.abs(Player[key].x - Bot[keyBot].x);
+
+		if(Room.lvl > 1)
+		{
+			Bot[keyBot].mouse.x = Player[key].x;
+			Bot[keyBot].mouse.y = Player[key].y;
+
+			if(Bot[keyBot].reload.shells)
+				Listener.shells.start(Bot[keyBot]);
+		}
+
 		if((Player[key].y < (Bot[keyBot].y - Player[key].size) || (Bot[keyBot].collision.right && Player[key].x > Bot[keyBot].x && Math.abs(Player[key].x - Bot[keyBot].x) > 8) || (Bot[keyBot].collision.left && Player[key].x < Bot[keyBot].x && Math.abs(Player[key].x - Bot[keyBot].x) > 8)) && !Bot[keyBot].status.jump)
 		{
 			OnClick.up(Bot[keyBot]);
@@ -102,6 +112,6 @@ document.addEventListener('mousemove',(e)=>{
 });
 
 document.addEventListener('mousedown', (e)=> {
-	OnClick.shells(Player[0]);
-	Listener.mouse.click(Player[0], e);
+	OnClick.shells(Bot[1]);
+	Listener.mouse.click(Bot[1], e);
 });

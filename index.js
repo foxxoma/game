@@ -10,6 +10,12 @@ canv.height = 700;
 
 document.oncontextmenu = ()=> {return false;}
 
+
+let Room = {
+	lvl: 2,
+	bots: 4
+};
+
 const Support = {
 	getVector(x1,y1,x2,y2)
 	{

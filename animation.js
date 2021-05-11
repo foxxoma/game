@@ -38,7 +38,14 @@ let Animation = {
 				ctx.drawImage(FieldImg.shell, shell.x, shell.y);
 			}
 		}
-
+		for(key in Bot)
+		{
+			for(shellKey in Bot[key].shells)
+			{
+				let shell = Bot[key].shells[shellKey];
+				ctx.drawImage(FieldImg.shell, shell.x, shell.y);
+			}
+		}
 	},
 	clearPlayerCanvas()
 	{
