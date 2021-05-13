@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>F</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.1/socket.io.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 </head>
 <body  >
 	<div class="bg"></div>
@@ -14,16 +16,119 @@
 	<script src="field.js"></script>
 	<script src="fieldJ.js"></script>
 	<script src="user.js"></script>
-	<script src="index.js"></script>
+	<script src="game.js"></script>
 	<script src="listener.js"></script>
 	<script src="movement.js"></script>
 	<script src="Bot_object.js"></script>
+	<script src="Player_object.js"></script>
+	<script src="User_object.js"></script>
 	<script src="Player.js"></script>
 	<script src="Bot.js"></script>
 	<script src="process.js"></script>
 	<script src="images.js"></script>
 	<script src="animation.js"></script>
 	<script src="frame.js"></script>
+	<div id="app">
+		<input v-if="!user.name" v-model="create.name" class="name" type="text" name="" placeholder="name">
+		<input v-model="create.room_name" class="name" type="text" name="" placeholder="room">
+		<input v-model="create.room "class="room" type="text" name="" placeholder="create.room">
+		<button @click="join" >подключиться</button>
+		<input class="message" type="" name="" placeholder="message">
+		<button @click="sendMessage">сообщение</button>
+		<div v-for="(item, index) in user.rooms"><span @click="goToChat(item.id)">{{item.name}}</span></div>
+		<div class="room" v-if="user.currentRoom">
+			<h1>{{user.currentRoom}}</h1>
+			<div v-if="user.currentMessages">
+				<div v-for="item in user.currentMessages">
+					<h3>{{item.name}}</h3>
+					<p>{{item.mess}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		const socket = io().connect();
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				create: {
+					room: '',
+					name: '',
+					room_name: ''
+				},
+				user: {
+					id: '',
+					name: '',
+					currentRoom: '',
+					rooms: {},
+					room: '',
+					currentMessages: [],
+				}
+			},
+			created()
+			{
+				socket.on('newMess', (data) => {
+					if (this.user.id != data.id)
+						Player[data.id] = data.player;
+				});				
+			},
+			methods: {
+				getDateTime()
+				{
+					let date = new Date();
+					return date.getHours() + ':' + date.getMinutes();
+				},
+				messConstructor(name, mess, room)
+				{
+					return {name, mess, room};
+				},
+				join()
+				{	
+					socket.emit('userJoined', {name: this.create.name, room: this.create.room, room_name:this.create.room_name}, (data) => {
+						if(!data)
+							return;
+
+						this.user.id = data.userId;
+						this.user.name = this.create.name;
+
+						this.user.rooms[data.room] = {
+							id: data.room,
+							name: data.room_name,
+							messages: []
+						}
+
+						this.user.currentRoom = data.room;
+
+						this.createPlayer();
+					});
+				},
+				sendMessage(player)
+				{
+					socket.emit('createMess', this.messConstructor(this.user.id, player, this.user.currentRoom));
+				},
+				createChatMessages()
+				{
+					this.user.currentMessages = this.user.rooms[this.user.currentRoom].messages;
+				},
+				goToChat(room)
+				{
+					this.user.currentRoom = room;
+					// this.createChatMessages();
+				},
+				createPlayer()
+				{
+					Player[this.user.id] = Player_object;
+					Player[this.user.id].id = this.user.id;
+					Users[this.user.id] = User_object;
+					Users[this.user.id].id = this.user.id;
+
+					start(this.user.id, this.user.currentRoom);
+					this.sendMessage(Player[this.user.id]);
+				}
+			}
+		})
+	</script>
 </body>
 <style type="text/css">
 	*
@@ -35,6 +140,11 @@
 	body
 	{
 		overflow: hidden;
+	}
+	#app
+	{
+		position: fixed;
+		z-index: 2;
 	}
 	.xp
 	{

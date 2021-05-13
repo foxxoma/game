@@ -1,145 +1,46 @@
-const canv = document.getElementById('players'),
-	background = document.getElementById('background'),
-	ctxB = background.getContext('2d'),
-	ctx = canv.getContext('2d');
+var express = require("express");
+var app = express();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
-background.height = 700;
-background.width = 1000;
-canv.width = 1000;
-canv.height = 700;
+const PORT = process.env.PORT || 3000;
 
-document.oncontextmenu = ()=> {return false;}
+http.listen(PORT, () =>
+{
+	console.log('listening on * ' + PORT);
+});
 
+app.use(express.static('public'));
 
-let Room = {
-	lvl: 2,
-	bots: 4
-};
+app.get('/', (request, respons) =>
+{
+	respons.sendFile('index.html', {root: __dirname});
+});
 
-const Support = {
-	getVector(x1,y1,x2,y2)
+const messConstructor = (id, player, room) => ({id, player, room});
+
+io.on('connection', socket =>
+{
+	console.log('a user connected');
+	socket.on('userJoined', (data, success) =>
 	{
-		let vx = x2 - x1,
-			vy = y2 - y1,
-			result = {};
+		let room = data.room;
 
-		let dist = Math.sqrt(vx * vx + vy * vy);
+		if(!data.name || !data.room_name)
+			return success(false);
+		if(!data.room)
+			room = new Date().getTime() + '' + Math.floor(Math.random() * 1000);
 
-		result.dx = vx / dist;
-		result.dy = vy / dist;
+		socket.join(room);
 
-		return result;
-	},
-	setImage(src)
-	{
-		let img = new Image();
-		img.src = src;
-		return img;
-	},
-	random(max, min)
-	{
-		return Math.random() * (max - min) + min;
-	}
-};
+		success({userId: socket.id, room:room, room_name: data.room_name});
 
-let Field = {
-	cell:
-	{
-		size: 64,
-	},
-	cellidth: 1000,
-	height: 700,
-	coordinates: [],
-	init()
-	{
-		this.fieldStart();
-		background.height = 19 * this.cell.size;
-		background.width = 50 * this.cell.size;
-		canv.width = 50 * this.cell.size;
-		canv.height = 19 * this.cell.size;
-	},
-	fieldStart()
-	{
-		for(let y = 0; y < 19; y++)
-		{
-			this.coordinates[y] = [];
-			for(let x = 0; x < 50; x++)
-			{
-				this.coordinates[y][x] = new FIELD(y,x);
-				this.coordinates[y][x].num = 0;
-			}
-		}
-		this.fieldCreate();
-	},
-	fieldCreate()
-	{
-		fieldCreate();
-		setTimeout(function() {Field.drawField();}, 500);
-	},
-	drawField()
-	{
-		for(let y = 0; y < 19; y++)
-		{
-			for(let x = 0; x < 50; x++)
-			{
-				this.coordinates[y][x].draw();
-			}
-		}
-	}
-};
+		// socket.emit('newMess', messConstructor(socket.id, `hello${data.name}`, room));
+		// socket.to(room).emit('newMess', messConstructor(socket.id,`take${data.name}`, room));
+	});
 
-let OnClick = {
-	left(player, e)
+	socket.on('createMess', (data) =>
 	{
-		if(e == 'keydown')
-		{
-			player.status.left = true;
-		}
-
-		if(e == 'keyup')
-			player.status.left = false;
-
-		if(!player.status.right && !player.status.left)
-			Listener.run.end(player);
-		else
-			Listener.run.start(player);
-	},
-	right(player,e)
-	{
-		if(e == 'keydown')
-		{
-			player.status.right = true;
-		}
-
-		if(e == 'keyup')
-			player.status.right = false;
-
-		if(!player.status.right && !player.status.left)
-			Listener.run.end(player);
-		else
-			Listener.run.start(player);
-	},
-	up(player)
-	{
-		if(player.reload.jump)
-			Listener.jump.start(player);
-		else
-		{
-			if(player.reload.flip)
-				Listener.flip.start(player);
-		}
-	},
-	jerk(player)
-	{
-		if(player.reload.jerk)
-		{
-			player.directions.jerk.vector = Support.getVector(player.x, player.y, player.mouse.x, player.mouse.y);
-			Listener.jerk.start(player);
-		}
-	},
-	shells(player)
-	{
-		if(player.reload.shells)
-			Listener.shells.start(player);
-	}
-};
+		io.in(data.room).emit('newMess', messConstructor(data.id, data.player, data.room));
+	});
+});
