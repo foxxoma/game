@@ -18,6 +18,7 @@ app.get('/', (request, respons) =>
 });
 
 const messConstructor = (id, player, room) => ({id, player, room});
+const damageMessConstructor = (id, damage, room) => ({id, damage, room});
 
 io.on('connection', socket =>
 {
@@ -42,5 +43,10 @@ io.on('connection', socket =>
 	socket.on('createMess', (data) =>
 	{
 		io.in(data.room).emit('newMess', messConstructor(data.id, data.player, data.room));
+	});
+
+	socket.on('createDamageMess', (data) =>
+	{
+		io.in(data.room).emit('damageMess', damageMessConstructor(data.id, data.damage, data.room));
 	});
 });

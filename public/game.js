@@ -12,11 +12,16 @@ document.oncontextmenu = ()=> {return false;}
 
 
 let Room = {
+	id: '',
 	lvl: 2,
 	bots: 4
 };
 
 const Support = {
+	damageMessConstructor(id, damage, room)
+	{
+		return {id, damage, room};
+	},
 	messConstructor(id, player, room)
 	{
 		return {id, player, room};

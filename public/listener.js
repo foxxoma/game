@@ -65,13 +65,13 @@ const Listener = {
 			player.hp = 100;
 			player.xp -= 1;
 
-			if(!player.bot)
+			if(!player.bot && Users[player.id])
 				Users[player.id].setXp(player.xp);
 		},
 		xp(player)
 		{
 			player.xp += 1;
-			if(!player.bot)
+			if(!player.bot && Users[player.id])
 				Users[player.id].setXp(player.xp);
 		}
 	},
@@ -329,6 +329,7 @@ const Listener = {
 						if((Player[key].x < (shell.x + player.shellSize.w)) && ((Player[key].x + Player[key].sizeCollision - 20) > shell.x) && (Player[key].y < (shell.y + player.shellSize.h)) && ((Player[key].y + Player[key].sizeCollision - 20) > shell.y))
 						{
 							Listener.shells.collision.user.start(Player[key], player, shell, 50);
+							socket.emit('createDamageMess', Support.damageMessConstructor(key, 50, Room.id));
 							return true;
 						}
 					}

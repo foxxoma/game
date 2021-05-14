@@ -41,13 +41,7 @@ function start(id, room)
 	{
 		socket.emit('createMess', Support.messConstructor(id, Player[id], room));
 
-		for(key in Player)
-		{
-			if(Player[key])
-				Movement.processing(Player[key]);
-			else
-				delete Player[key];
-		}
+		Movement.processing(Player[id]);
 
 		// for(key in Bot)
 		// 	Movement.processing(Bot[key]);

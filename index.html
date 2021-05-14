@@ -69,8 +69,26 @@
 			created()
 			{
 				socket.on('newMess', (data) => {
-					if (this.user.id != data.id)
+					if (this.user.id != data.id && data.player)
+					{
 						Player[data.id] = data.player;
+						for(key in Player[data.id].shells)
+							if(!Player[data.id].shells[key])
+								delete Player[data.id].shells[key];
+					}
+				});
+
+				socket.on('damageMess', (data) => {
+					if (this.user.id == data.id)
+					{
+						Player[data.id].hp -= data.damage;
+
+						if(Player[data.id].hp <= 0)
+						{
+							Listener.dead.start(Player[data.id]);
+							Listener.dead.xp(Player[data.id]);
+						}
+					}
 				});				
 			},
 			methods: {
@@ -82,6 +100,10 @@
 				messConstructor(name, mess, room)
 				{
 					return {name, mess, room};
+				},
+				damageMessConstructor(id, damage, room) 
+				{
+					return {name, damage, room};
 				},
 				join()
 				{	
@@ -123,6 +145,7 @@
 					Users[this.user.id] = User_object;
 					Users[this.user.id].id = this.user.id;
 
+					Room.id = this.user.currentRoom;
 					start(this.user.id, this.user.currentRoom);
 					this.sendMessage(Player[this.user.id]);
 				}
