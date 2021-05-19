@@ -1,8 +1,8 @@
 let Bot = {
 	1:{
 		id:1,
-		y: canv.height/(Math.random() * (10 - 1) + 1),
-		x: canv.width/(Math.random() * (10 - 1) + 1),
+		x: 1200,
+		y: 200,
 		size: 64,
 		bot: 1,
 		hp: 100,
@@ -109,8 +109,8 @@ let Bot = {
 	},
 	2:{
 		id: 2,
-		y: canv.height/(Math.random() * (10 - 1) + 1),
-		x: canv.width/(Math.random() * (10 - 1) + 1),
+		x: 1500,
+		y: 300,
 		size: 64,
 		bot: 1,
 		hp: 100,

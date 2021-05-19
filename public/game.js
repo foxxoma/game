@@ -83,7 +83,6 @@ let Field = {
 	fieldCreate()
 	{
 		fieldCreate();
-		setTimeout(function() {Field.drawField();}, 1000);
 	},
 	drawField()
 	{

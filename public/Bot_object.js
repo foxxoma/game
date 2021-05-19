@@ -1,7 +1,7 @@
 let Bot_object = {
 	id:1,
-	y: canv.height/(Math.random() * (10 - 1) + 1),
-	x: canv.width/(Math.random() * (10 - 1) + 1),
+	x: (Math.random() * (canv.width - 100 - 1) + 1),
+	y: (Math.random() * (canv.height - 200 - 1) + 1),
 	size: 64,
 	bot: 1,
 	hp: 100,

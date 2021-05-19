@@ -30,7 +30,7 @@
 	<script src="frame.js"></script>
 	<div id="app">
 		<input v-if="!user.name" v-model="create.name" class="name" type="text" name="" placeholder="name">
-		<input v-model="create.room_name" class="name" type="text" name="" placeholder="room">
+		<!-- <input v-model="create.room_name" class="name" type="text" name="" placeholder="room"> -->
 		<input v-model="create.room "class="room" type="text" name="" placeholder="create.room">
 		<button @click="join" >подключиться</button>
 		<input class="message" type="" name="" placeholder="message">
@@ -69,6 +69,9 @@
 			created()
 			{
 				socket.on('newMess', (data) => {
+					if(Object.keys(Player).length > 1)
+						Bot = {};
+
 					if (this.user.id != data.id && data.player)
 					{
 						Player[data.id] = data.player;
@@ -86,10 +89,14 @@
 						if(Player[data.id].hp <= 0)
 						{
 							Listener.dead.start(Player[data.id]);
-							Listener.dead.xp(Player[data.id]);
 						}
 					}
-				});				
+				});
+
+				socket.on('disconnectUser', (data) => {
+					if(Player[data.id])
+						delete Player[data.id]; 
+				});			
 			},
 			methods: {
 				getDateTime()
@@ -107,7 +114,7 @@
 				},
 				join()
 				{	
-					socket.emit('userJoined', {name: this.create.name, room: this.create.room, room_name:this.create.room_name}, (data) => {
+					socket.emit('userJoined', {name: this.create.name, room: this.create.room, room_name:this.create.room}, (data) => {
 						if(!data)
 							return;
 
@@ -116,7 +123,7 @@
 
 						this.user.rooms[data.room] = {
 							id: data.room,
-							name: data.room_name,
+							name: data.room,
 							messages: []
 						}
 
@@ -140,6 +147,7 @@
 				},
 				createPlayer()
 				{
+					document.querySelector('#app').style.display = 'none';
 					Player[this.user.id] = Player_object;
 					Player[this.user.id].id = this.user.id;
 					Users[this.user.id] = User_object;

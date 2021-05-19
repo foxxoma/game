@@ -2,6 +2,8 @@ let frame = null;
 
 function start(id, room)
 {
+	Field.drawField();
+
 	document.addEventListener('keydown', (e)=> {
 		if(e.code == 'KeyA')
 			OnClick.left(Player[id],'keydown');
@@ -37,16 +39,16 @@ function start(id, room)
 	for(key in Bot)
 		Animation.changesFrames(Bot[key]);
 
-	let frame = setInterval((e)=>
+	frame = setInterval((e)=>
 	{
 		socket.emit('createMess', Support.messConstructor(id, Player[id], room));
 
 		Movement.processing(Player[id]);
 
-		// for(key in Bot)
-		// 	Movement.processing(Bot[key]);
+		for(key in Bot)
+			Movement.processing(Bot[key]);
 
-		// Follow(Bot);
+		Follow(Bot);
 
 		Animation.processing();
 

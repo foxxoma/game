@@ -65,7 +65,7 @@ const Listener = {
 			player.hp = 100;
 			player.xp -= 1;
 
-			if(!player.bot && Users[player.id])
+			if(Users[player.id])
 				Users[player.id].setXp(player.xp);
 		},
 		xp(player)
@@ -297,13 +297,20 @@ const Listener = {
 					if(player.bot && user.bot)
 						return;
 
-					user.hp -= hp;
 					shell.clear = true;
 
-					if(user.hp <= 0)
-					{
-						Listener.dead.start(user);
+					if(user.hp - hp <= 0)
 						Listener.dead.xp(player);
+
+					if(user.bot)
+					{
+						user.hp -= hp;
+
+						if(user.hp <= 0)
+						{
+							Listener.dead.start(user);
+							Listener.dead.xp(player);
+						}
 					}
 				},
 				check(player, shell)
@@ -313,7 +320,7 @@ const Listener = {
 
 					for(key in Bot)
 					{
-						if(player.id == Bot[key].id)
+						if(player.id == Bot[key].id || player.bot)
 							continue;
 
 						if((Bot[key].x < (shell.x + player.shellSize.w)) && ((Bot[key].x + Bot[key].sizeCollision - 20) > shell.x) && (Bot[key].y < (shell.y + player.shellSize.h)) && ((Bot[key].y + Bot[key].sizeCollision - 20) > shell.y))

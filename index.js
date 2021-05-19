@@ -39,7 +39,10 @@ io.on('connection', socket =>
 		// socket.emit('newMess', messConstructor(socket.id, `hello${data.name}`, room));
 		// socket.to(room).emit('newMess', messConstructor(socket.id,`take${data.name}`, room));
 	});
-
+	socket.on("disconnect", () =>
+	{
+		io.emit('disconnectUser', {'id':socket.id});
+	});
 	socket.on('createMess', (data) =>
 	{
 		io.in(data.room).emit('newMess', messConstructor(data.id, data.player, data.room));
