@@ -13,8 +13,8 @@ document.oncontextmenu = ()=> {return false;}
 
 let Room = {
 	id: '',
-	lvl: 2,
-	bots: 4
+	lvl: 1,
+	bots: 10
 };
 
 const Support = {

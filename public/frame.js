@@ -33,6 +33,10 @@ function start(id, room)
 		Listener.mouse.move(Player[id], e);
 	});
 
+	document.addEventListener('mousedown',(e)=>{
+		OnClick.shells(Player[id]);
+	});
+
 	for(key in Player)
 		Animation.changesFrames(Player[key]);
 

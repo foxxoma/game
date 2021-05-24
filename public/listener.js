@@ -299,7 +299,7 @@ const Listener = {
 
 					shell.clear = true;
 
-					if(user.hp - hp <= 0)
+					if(user.hp - hp <= 0 && !user.bot)
 						Listener.dead.xp(player);
 
 					if(user.bot)

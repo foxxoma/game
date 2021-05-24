@@ -29,6 +29,14 @@
 	<script src="animation.js"></script>
 	<script src="frame.js"></script>
 	<div id="app">
+		<div class="roomInputs">
+			1
+			<input @change="rootInput" v-model="roomI.lvl" value="1" class="name" type="radio" name="roomILvl" placeholder="lvl">
+			2
+			<input @change="rootInput" v-model="roomI.lvl" value="2" class="name" type="radio" name="oomILvl" placeholder="lvl">
+			<input @change="rootInput" v-model="roomI.count" class="name" type="number" name="" placeholder="name">
+		</div>
+
 		<input v-if="!user.name" v-model="create.name" class="name" type="text" name="" placeholder="name">
 		<!-- <input v-model="create.room_name" class="name" type="text" name="" placeholder="room"> -->
 		<input v-model="create.room "class="room" type="text" name="" placeholder="create.room">
@@ -56,6 +64,10 @@
 					room: '',
 					name: '',
 					room_name: ''
+				},
+				roomI: {
+					lvl: 1,
+					count: 10
 				},
 				user: {
 					id: '',
@@ -99,6 +111,11 @@
 				});			
 			},
 			methods: {
+				rootInput()
+				{
+					Room.lvl = parseInt(this.roomI.lvl);
+					Room.bots = parseInt(this.roomI.count);
+				},
 				getDateTime()
 				{
 					let date = new Date();
