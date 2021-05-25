@@ -34,7 +34,7 @@
 				<p>Уровень</p>
 				<label>1<input @change="rootInput" v-model="roomI.lvl" value="1" class="name" type="radio" name="oomILvl" placeholder="lvl"></label>
 				<label>2<input @change="rootInput" v-model="roomI.lvl" value="2" class="name" type="radio" name="roomILvl" placeholder="lvl"></label>
-				<p>Количество ботов</p>
+				<p>Количество ботов для ожидания</p>
 				<input @change="rootInput" v-model="roomI.count" class="name" type="number" name="" placeholder="name">
 			</div>
 
@@ -42,6 +42,11 @@
 			<!-- <input v-model="create.room_name" class="name" type="text" name="" placeholder="room"> -->
 			<input v-model="create.room "class="room" type="text" name="" placeholder="Имя комнаты">
 			<button @click="join" >подключиться</button>
+			<div class="help">
+				<p>W,A,S,D - управление</p>
+				<p>Q - рейтинг</p>
+				<p>Click - бросить снаряд</p>
+			</div>
 		</div>
 		<div class="tabs" style="display: none;">
 			<div v-for="pl in Player">
@@ -63,7 +68,7 @@
 				},
 				roomI: {
 					lvl: 1,
-					count: 10
+					count: 20
 				},
 				user: {
 					id: '',
@@ -273,6 +278,14 @@
 	{
 		width: auto;
 		margin-left: 10px;
+	}
+	.help
+	{
+		margin-top: 30px;
+	}
+	.roomInputs
+	{
+		margin-bottom: 20px	;
 	}
 	canvas {z-index: 1; position: absolute;}
 </style>
