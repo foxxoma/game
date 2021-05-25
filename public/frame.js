@@ -14,11 +14,8 @@ function start(id, room)
 		if(e.code == 'KeyW')
 			OnClick.up(Player[id]);
 
-		if(e.code == 'KeyE')
-			OnClick.jerk(Player[id]);
-
-		if(e.code == 'KeyQ')
-			OnClick.shells(Player[id]);
+		// if(e.code == 'KeyE')
+		// 	OnClick.jerk(Player[id]);
 	});
 
 	document.addEventListener('keyup', (e)=> {
@@ -27,6 +24,16 @@ function start(id, room)
 
 		if(e.code == 'KeyD')
 			OnClick.right(Player[id],'keyup');
+	});
+
+	document.addEventListener('keydown', (e)=> {
+		if(e.code == 'KeyQ')
+			document.querySelector('.tabs').style.display = 'block';
+	});
+
+	document.addEventListener('keyup', (e)=> {
+		if(e.code == 'KeyQ')
+			document.querySelector('.tabs').style.display = 'none';
 	});
 
 	document.addEventListener('mousemove',(e)=>{

@@ -29,28 +29,24 @@
 	<script src="animation.js"></script>
 	<script src="frame.js"></script>
 	<div id="app">
-		<div class="roomInputs">
-			1
-			<input @change="rootInput" v-model="roomI.lvl" value="1" class="name" type="radio" name="roomILvl" placeholder="lvl">
-			2
-			<input @change="rootInput" v-model="roomI.lvl" value="2" class="name" type="radio" name="oomILvl" placeholder="lvl">
-			<input @change="rootInput" v-model="roomI.count" class="name" type="number" name="" placeholder="name">
-		</div>
+		<div class="crate_room">
+			<div class="roomInputs">
+				<p>Уровень</p>
+				<label>1<input @change="rootInput" v-model="roomI.lvl" value="1" class="name" type="radio" name="oomILvl" placeholder="lvl"></label>
+				<label>2<input @change="rootInput" v-model="roomI.lvl" value="2" class="name" type="radio" name="roomILvl" placeholder="lvl"></label>
+				<p>Количество ботов</p>
+				<input @change="rootInput" v-model="roomI.count" class="name" type="number" name="" placeholder="name">
+			</div>
 
-		<input v-if="!user.name" v-model="create.name" class="name" type="text" name="" placeholder="name">
-		<!-- <input v-model="create.room_name" class="name" type="text" name="" placeholder="room"> -->
-		<input v-model="create.room "class="room" type="text" name="" placeholder="create.room">
-		<button @click="join" >подключиться</button>
-		<input class="message" type="" name="" placeholder="message">
-		<button @click="sendMessage">сообщение</button>
-		<div v-for="(item, index) in user.rooms"><span @click="goToChat(item.id)">{{item.name}}</span></div>
-		<div class="room" v-if="user.currentRoom">
-			<h1>{{user.currentRoom}}</h1>
-			<div v-if="user.currentMessages">
-				<div v-for="item in user.currentMessages">
-					<h3>{{item.name}}</h3>
-					<p>{{item.mess}}</p>
-				</div>
+			<input v-if="!user.name" v-model="create.name" class="name" type="text" name="" placeholder="Ваше имя">
+			<!-- <input v-model="create.room_name" class="name" type="text" name="" placeholder="room"> -->
+			<input v-model="create.room "class="room" type="text" name="" placeholder="Имя комнаты">
+			<button @click="join" >подключиться</button>
+		</div>
+		<div class="tabs" style="display: none;">
+			<div v-for="pl in Player">
+				<h3>{{pl.name}}:</h3>
+				<h3>{{pl.xp}}</h3>
 			</div>
 		</div>
 	</div>
@@ -76,7 +72,8 @@
 					rooms: {},
 					room: '',
 					currentMessages: [],
-				}
+				},
+				Player: {}
 			},
 			created()
 			{
@@ -91,6 +88,17 @@
 							if(!Player[data.id].shells[key])
 								delete Player[data.id].shells[key];
 					}
+
+					var result = {};
+					Object.keys(Player).sort(function (a, b) {
+						return Player[b].xp - Player[a].xp;
+					})
+					.forEach(
+						function(v){result[v] = Player[v];}
+					);
+
+					this.Player = result;
+					
 				});
 
 				socket.on('damageMess', (data) => {
@@ -164,9 +172,10 @@
 				},
 				createPlayer()
 				{
-					document.querySelector('#app').style.display = 'none';
+					document.querySelector('.crate_room').style.display = 'none';
 					Player[this.user.id] = Player_object;
 					Player[this.user.id].id = this.user.id;
+					Player[this.user.id].name = this.user.name;
 					Users[this.user.id] = User_object;
 					Users[this.user.id].id = this.user.id;
 
@@ -210,6 +219,60 @@
 		height: 100%;
 		background: url(img/bg.jpg);
 		background-size: 100%;
+	}
+	.crate_room
+	{
+		color: white;
+		position: fixed;
+		left: 30%;
+		top: 20%;
+		box-sizing: border-box;
+		min-width: 40%;
+		width: 40%;
+		display: flex;
+		min-height: 300px;
+		border-right-width: 300px;
+		flex-wrap: wrap;
+		background-color: rgba(0, 0, 0, 0.7);
+		padding: 30px;
+	}
+	.tabs
+	{
+		color: white;
+		position: fixed;
+		left: 30%;
+		top: 20%;
+		box-sizing: border-box;
+		min-width: 40%;
+		width: 40%;
+		min-height: 300px;
+		border-right-width: 300px;
+		flex-wrap: wrap;
+		background-color: rgba(0, 0, 0, 0.7);
+		padding: 30px;
+	}
+	.tabs div
+	{
+		margin-bottom: 20px;
+		display: flex;
+		width: 100%;
+	}
+	.tabs div h3
+	{
+		margin-right: 10px;
+	}
+	.crate_room input, .crate_room button
+	{
+		width: 100%;
+	}
+	.crate_room label
+	{
+		display: flex;
+	}
+	.crate_room label input
+	{
+		width: auto;
+		margin-left: 10px;
 	}
 	canvas {z-index: 1; position: absolute;}
 </style>
